@@ -12,6 +12,7 @@ create table if not exists post(
   posted timestamp,
   id_author integer references users (id)
     on update cascade
+  -- TODO: Discriminator type field
 );
 
 create table if not exists question(

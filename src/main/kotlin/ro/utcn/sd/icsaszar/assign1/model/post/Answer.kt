@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 import javax.persistence.Entity
 
 @Entity
+//TODO: Discriminator field
 class Answer(
         authorId: Long,
 

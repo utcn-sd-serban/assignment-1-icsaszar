@@ -6,6 +6,7 @@ import javax.persistence.*
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+//TODO: Discriminator field
 abstract class Post(
         @Column
         open var authorId: Long,

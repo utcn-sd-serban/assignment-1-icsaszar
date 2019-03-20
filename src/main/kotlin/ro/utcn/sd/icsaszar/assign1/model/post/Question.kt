@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 import javax.persistence.Entity
 
 @Entity
+//TODO: Discriminator field
 class Question(
         authorId: Long,
         text: String,
