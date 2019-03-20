@@ -20,7 +20,7 @@ class JdbcQuestionRepository(private val template: JdbcTemplate) : GenericReposi
                 map.apply {
                     put("post_text", it.text)
                     put("posted",it.posted)
-                    put("id_author",it.authorId)
+                    put("id_author",it.author.id!!)
                 }
             }
 

@@ -1,24 +1,23 @@
 package ro.utcn.sd.icsaszar.assign1.model.post
 
 import ro.utcn.sd.icsaszar.assign1.model.GenericEntity
+import ro.utcn.sd.icsaszar.assign1.model.User
 import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-//TODO: Discriminator field
 abstract class Post(
-        @Column
-        open var authorId: Long,
+        @ManyToOne
+        @JoinColumn(name = "author_id", nullable = false)
+        open var author: User = User(),
 
-        @Column
-        open var text: String,
+        open var text: String = "",
 
-        @Column
-        open var posted: LocalDateTime
+        open var posted: LocalDateTime = LocalDateTime.now()
 ) : GenericEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override var id: Long? = 0
+    override var id: Long? = null
+
 }

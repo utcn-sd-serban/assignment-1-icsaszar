@@ -1,16 +1,22 @@
 package ro.utcn.sd.icsaszar.assign1.model.post
 
+import ro.utcn.sd.icsaszar.assign1.model.User
 import java.time.LocalDateTime
 import javax.persistence.Entity
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 
 @Entity
 //TODO: Discriminator field
 class Answer(
-        authorId: Long,
+        author: User = User(),
 
-        text: String,
+        text: String = "",
 
-        posted: LocalDateTime
-) : Post(authorId, text, posted){
+        posted: LocalDateTime = LocalDateTime.now()
+) : Post(author, text, posted){
 
+    @ManyToOne
+    @JoinColumn(name = "question_id", nullable = false)
+    var answerTo: Question = Question()
 }
