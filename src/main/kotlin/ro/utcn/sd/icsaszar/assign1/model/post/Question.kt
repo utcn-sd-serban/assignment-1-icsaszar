@@ -14,12 +14,21 @@ class Question(
         @Column
         var title: String = "") : Post(author, text, posted){
 
-        @ManyToMany
-        @JoinTable(name = "question_tag",
-                joinColumns = [JoinColumn(name = "question_id")],
-                inverseJoinColumns = [JoinColumn(name = "tag_id")])
-        var tags: MutableSet<Tag> = mutableSetOf()
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "question_tag",
+            joinColumns = [JoinColumn(name = "question_id")],
+            inverseJoinColumns = [JoinColumn(name = "tag_id")])
+    var tags: MutableSet<Tag> = mutableSetOf()
 
-        @OneToMany(mappedBy = "answerTo")
-        var answers: MutableList<Answer> = mutableListOf()
+    @OneToMany(mappedBy = "answerTo", fetch = FetchType.EAGER)
+    var answers: MutableList<Answer> = mutableListOf()
+
+    fun display(): String {
+        val sb: StringBuilder = StringBuilder()
+        sb.append(title).append("\n")
+            .append(text).append("\n")
+            .append(author.userName.padEnd(30))
+            .append(posted).append("\n")
+        return sb.toString()
+    }
 }

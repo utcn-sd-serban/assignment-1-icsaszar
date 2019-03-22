@@ -19,6 +19,6 @@ interface UserRepository : GenericRepository<User>{
 }
 
 interface TagRepository : GenericRepository<Tag>{
-
+    fun findByName(name: String) : Tag?
 }
 

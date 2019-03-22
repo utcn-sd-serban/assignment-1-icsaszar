@@ -13,10 +13,11 @@ class Answer(
 
         text: String = "",
 
-        posted: LocalDateTime = LocalDateTime.now()
+        posted: LocalDateTime = LocalDateTime.now(),
+
+        @ManyToOne
+        @JoinColumn(name = "question_id", nullable = false)
+        var answerTo: Question = Question()
 ) : Post(author, text, posted){
 
-    @ManyToOne
-    @JoinColumn(name = "question_id", nullable = false)
-    var answerTo: Question = Question()
 }
