@@ -36,7 +36,7 @@ class JdbcQuestionRepository(private val template: JdbcTemplate) : GenericReposi
 
     }
 
-    override fun update(id: Long, entity: Question): Question {
+    private fun update(id: Long, entity: Question): Question {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

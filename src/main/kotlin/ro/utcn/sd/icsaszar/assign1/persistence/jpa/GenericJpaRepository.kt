@@ -29,15 +29,6 @@ abstract class GenericJpaRepository<T : GenericEntity>(
         return entityManager.createQuery(query).resultList
     }
 
-    override fun update(id: Long, entity: T): T {
-        return if(entity.id == null){
-            entityManager.persist(entity)
-            entity
-        }else{
-            entityManager.merge(entity)
-        }
-    }
-
     override fun findById(id: Long): T? {
         return entityManager.find(entityClass, id)
     }

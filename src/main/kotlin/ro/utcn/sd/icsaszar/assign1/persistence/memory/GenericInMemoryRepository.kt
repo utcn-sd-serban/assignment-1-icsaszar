@@ -21,11 +21,6 @@ abstract class GenericInMemoryRepository<T : GenericEntity> : GenericRepository<
         return entity
     }
 
-    override fun update(id: Long, entity: T): T {
-        data[id] = entity
-        return entity
-    }
-
     override fun delete(entity: T) {
         data.remove(entity.id)
     }
