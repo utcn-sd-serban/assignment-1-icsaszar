@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 
 abstract class GenericInMemoryRepository<T : GenericEntity> : GenericRepository<T>{
-    private val data: MutableMap<Long, T> = HashMap()
+    protected val data: MutableMap<Long, T> = HashMap()
     private val currentId: AtomicLong = AtomicLong(0)
 
     override fun save(entity: T): T {

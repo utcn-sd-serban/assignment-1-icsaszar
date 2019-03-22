@@ -5,7 +5,7 @@ import javax.persistence.*
 
 @Entity
 data class User(
-        var name: String = ""
+        var userName: String = ""
 ) : GenericEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

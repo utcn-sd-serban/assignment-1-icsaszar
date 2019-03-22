@@ -5,43 +5,12 @@ import org.springframework.stereotype.Component
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.persistence.api.*
 
-
 @Component
 @ConditionalOnProperty(name = ["a1.repository-type"], havingValue = "MEMORY")
-abstract class InMemoryQuestionRepositoryFactory : QuestionRepositoryFactory {
-    abstract val repository: QuestionInMemoryRepository
+class InMemoryRepositoryFactory : RepositoryFactory {
 
-    override fun createRepository(): QuestionRepository {
-        return repository
-    }
-}
-
-@Component
-@ConditionalOnProperty(name = ["a1.repository-type"], havingValue = "MEMORY")
-abstract class InMemoryAnswerRepositoryFactory : AnswerRepositoryFactory {
-    abstract val repository: AnswerInMemoryRepository
-
-    override fun createRepository(): AnswerRepository {
-        return repository
-    }
-}
-
-@Component
-@ConditionalOnProperty(name = ["a1.repository-type"], havingValue = "MEMORY")
-abstract class InMemoryTagRepositoryFactory : TagRepositoryFactory {
-    abstract val repository: TagInMemoryRepository
-
-    override fun createRepository(): TagRepository{
-        return repository
-    }
-}
-
-@Component
-@ConditionalOnProperty(name = ["a1.repository-type"], havingValue = "MEMORY")
-abstract class InMemoryUserRepositoryFactory : UserRepositoryFactory {
-    abstract val repository: UserInMemoryRepository
-
-    override fun createRepository(): UserRepository {
-        return repository
-    }
+    override val questionRepository: QuestionRepository = QuestionInMemoryRepository()
+    override val answerRepository: AnswerRepository = AnswerInMemoryRepository()
+    override val userRepository: UserRepository = UserInMemoryRepository()
+    override val tagRepository: TagRepository = TagInMemoryRepository()
 }

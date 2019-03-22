@@ -5,18 +5,9 @@ import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 
-interface QuestionRepositoryFactory {
-    fun createRepository() : QuestionRepository
-}
-
-interface AnswerRepositoryFactory{
-    fun createRepository() : AnswerRepository
-}
-
-interface UserRepositoryFactory{
-    fun createRepository() : UserRepository
-}
-
-interface TagRepositoryFactory{
-    fun createRepository() : TagRepository
+interface RepositoryFactory {
+    val questionRepository : QuestionRepository
+    val answerRepository: AnswerRepository
+    val userRepository: UserRepository
+    val tagRepository: TagRepository
 }

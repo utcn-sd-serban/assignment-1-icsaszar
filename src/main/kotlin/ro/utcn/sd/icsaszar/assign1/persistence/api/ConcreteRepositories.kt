@@ -15,7 +15,7 @@ interface AnswerRepository : GenericRepository<Answer>{
 }
 
 interface UserRepository : GenericRepository<User>{
-
+    fun findByUserName(userName: String) : User?
 }
 
 interface TagRepository : GenericRepository<Tag>{

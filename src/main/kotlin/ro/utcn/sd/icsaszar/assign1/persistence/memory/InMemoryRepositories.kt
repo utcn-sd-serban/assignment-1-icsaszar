@@ -23,5 +23,7 @@ class TagInMemoryRepository() : GenericInMemoryRepository<Tag>(), TagRepository 
 }
 
 class UserInMemoryRepository() : GenericInMemoryRepository<User>(), UserRepository {
-
+    override fun findByUserName(userName: String): User? {
+        return data.values.find { it.userName == userName }
+    }
 }
