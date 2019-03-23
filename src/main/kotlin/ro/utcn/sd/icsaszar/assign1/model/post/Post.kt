@@ -12,7 +12,7 @@ abstract class Post(
         @JoinColumn(name = "author_id", nullable = false)
         open var author: User = User(),
 
-        open var text: String = "",
+        open var postText: String = "",
 
         open var posted: LocalDateTime = LocalDateTime.now()
 ) : GenericEntity {

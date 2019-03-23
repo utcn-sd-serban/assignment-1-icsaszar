@@ -4,6 +4,7 @@ import ro.utcn.sd.icsaszar.assign1.model.post.Post
 import javax.persistence.*
 
 @Entity
+@Table(name = "users")
 data class User(
         var userName: String = ""
 ) : GenericEntity {

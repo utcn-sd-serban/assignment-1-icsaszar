@@ -13,7 +13,6 @@ import ro.utcn.sd.icsaszar.assign1.persistence.api.UserRepository
 interface QuestionDataRepository : CrudRepository<Question, Long>, QuestionRepository {
 
 }
-
 interface AnswerDataRepository : CrudRepository<Answer, Long>, AnswerRepository {
 
 }

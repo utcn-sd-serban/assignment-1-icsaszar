@@ -18,7 +18,7 @@ class JdbcQuestionRepository(private val template: JdbcTemplate) : GenericReposi
             val map: MutableMap<String, Any> = HashMap()
             entity.let {
                 map.apply {
-                    put("post_text", it.text)
+                    put("post_text", it.postText)
                     put("posted",it.posted)
                     put("id_author",it.author.id!!)
                 }

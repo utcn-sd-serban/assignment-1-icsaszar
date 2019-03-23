@@ -7,7 +7,9 @@ import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 import ro.utcn.sd.icsaszar.assign1.persistence.api.GenericRepository
 
 interface QuestionRepository : GenericRepository<Question> {
-
+    fun findAllByTags(tag: Tag): List<Question>
+    fun findAllByTitleContainsIgnoreCase(text: String): List<Question>
+    fun findAllByOrderByPostedDesc(): List<Question>
 }
 
 interface AnswerRepository : GenericRepository<Answer>{

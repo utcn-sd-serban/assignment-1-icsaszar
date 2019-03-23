@@ -8,9 +8,9 @@ import ro.utcn.sd.icsaszar.assign1.persistence.api.*
 @Component
 @ConditionalOnProperty(name = ["a1.repository-type"], havingValue = "MEMORY")
 class InMemoryRepositoryFactory : RepositoryFactory {
-
-    override val questionRepository: QuestionRepository = QuestionInMemoryRepository()
-    override val answerRepository: AnswerRepository = AnswerInMemoryRepository()
-    override val userRepository: UserRepository = UserInMemoryRepository()
-    override val tagRepository: TagRepository = TagInMemoryRepository()
+    private val mainRepository: InMemoryRepository = InMemoryRepository()
+    override val questionRepository: QuestionRepository = QuestionInMemoryRepository(mainRepository)
+    override val answerRepository: AnswerRepository = AnswerInMemoryRepository(mainRepository)
+    override val userRepository: UserRepository = UserInMemoryRepository(mainRepository)
+    override val tagRepository: TagRepository = TagInMemoryRepository(mainRepository)
 }
