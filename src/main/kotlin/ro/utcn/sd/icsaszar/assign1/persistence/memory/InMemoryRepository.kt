@@ -5,12 +5,14 @@ import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.atomic.AtomicLong
 
 class InMemoryRepository {
-    private val questionData: MutableMap<Long, Question> = mutableMapOf()
-    private val userData: MutableMap<Long, User> = mutableMapOf()
-    private val tagData: MutableMap<Long, Tag> = mutableMapOf()
+    private val questionData: ConcurrentMap<Long, Question> = ConcurrentHashMap()
+    private val userData: ConcurrentMap<Long, User> = ConcurrentHashMap()
+    private val tagData: ConcurrentMap<Long, Tag> = ConcurrentHashMap()
     private val currentQuestionId: AtomicLong = AtomicLong(0)
     private val currentUserId: AtomicLong = AtomicLong(0)
     private val currentAnswerId: AtomicLong = AtomicLong(0)
@@ -62,14 +64,14 @@ class InMemoryRepository {
         if(answer.id == null)
             answer.id = currentAnswerId.getAndIncrement()
 
-        questionData[answer.answerTo.id]!!.answers.add(answer)
+        questionData[answer.answerTo!!.id]!!.answers.add(answer)
 
         userData[answer.author.id]!!.posts.add(answer)
         return answer
     }
 
     fun deleteAnswer(answer: Answer) {
-        questionData[answer.answerTo.id]!!.answers.remove(answer)
+        questionData[answer.answerTo!!.id]!!.answers.remove(answer)
     }
 
     fun findAnswerById(id: Long): Answer? =

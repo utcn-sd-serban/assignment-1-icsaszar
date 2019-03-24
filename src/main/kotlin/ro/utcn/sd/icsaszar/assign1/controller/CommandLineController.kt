@@ -39,6 +39,7 @@ class CommandLineController(
                     "tags" -> handleTags()
                     "filter" -> handleFilter()
                     "view" -> handleView()
+                    "account" -> handleAccount()
                     "logout" -> {
                         println("Logging out")
                         currentUser = null
@@ -51,6 +52,68 @@ class CommandLineController(
 
         }
 
+    }
+
+    private fun handleAccount() {
+        do {
+            println("[account] Type q to view a list of your questions")
+            println("[account] Type a to view a list of your answers")
+            println("[account] Type manage to edit or delete an answer")
+            println("[account] Type a to done to exit")
+            var cmd = readLine()!!
+
+            when(cmd){
+                "q" -> {
+                    val questions = questionService.findAllByAuthorId(currentUser!!.id!!)
+                    questions.forEach {
+                        println(it.display())
+                    }
+                }
+                "a" -> {
+                    val answers = answerService.findAllByAuthorId(currentUser!!.id!!)
+                    answers.forEach {
+                        println(it.answerTo!!.display())
+                        println(it.display())
+                    }
+                }
+                "manage" -> {
+                    println("[account] [manage] Type the id of the question you would like to manage")
+                    cmd = readLine()!!
+                    val id = cmd.toLong()
+                    val answers = answerService.findAllByAuthorId(currentUser!!.id!!)
+                    val answer = answers.find { it.author.id!! == currentUser!!.id!! }
+                    if(answer == null){
+                        println("[account] [manage] Answer with id: $id not found")
+                    }else{
+                        println(answer.answerTo!!.display())
+                        println(answer.display())
+                        println("[account] [manage] Type delete to delete this question")
+                        println("[account] [manage] Type edit to edit this question")
+                        cmd = readLine()!!
+                        when (cmd){
+                            "edit" -> {
+                                println("[account] [manage] [edit] Type new answer text")
+                                val newText = readLine()!!
+                                answer.postText = newText
+                                answerService.updateAnswer(answer)
+                                println("[account] [manage] [edit] Answer updated")
+                            }
+                            "delete" -> {
+                                answerService.deleteAnswer(answer)
+                                println("[account] [manage] [delete] Answer deleted")
+                            }
+                            else -> {
+                                println("[account] [manage] Invalid command")
+                            }
+                        }
+                    }
+                }
+                "done" -> {}
+                else -> {
+                    println("[account] Invalid command")
+                }
+            }
+        }while(cmd != "done")
     }
 
     private fun handleAnswer() {
@@ -79,13 +142,17 @@ class CommandLineController(
 
         while(cmd != "done"){
             if(cmd == "answer"){
-                println("[answer] Type answer text:")
+                print("[answer] Type answer text:")
                 cmd = readLine()!!
                 answerService.submitAnswer(cmd, currentUser!!, question)
                 println("[answer] Answer submitted")
             } else{
               println("[answer] Invalid command")
             }
+
+            println("[view] Type answer to submit an answer to this question")
+            println("[view] Type done to exit")
+
             cmd = readLine()!!
         }
     }
@@ -211,7 +278,7 @@ class CommandLineController(
     }
 
     private fun handleHelp(){
-        val l = listOf("logout", "post", "list", "answer", "help", "filter", "view")
+        val l = listOf("logout", "post", "list", "answer", "help", "filter", "view", "account")
         println("The available commands are:")
         l.forEach { println(it) }
     }

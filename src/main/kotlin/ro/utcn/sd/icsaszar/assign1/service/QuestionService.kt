@@ -34,4 +34,8 @@ class QuestionService(private val repositoryFactory: RepositoryFactory){
     @Transactional
     fun findById(id: Long): Question? =
         repositoryFactory.questionRepository.findById(id)
+
+    @Transactional
+    fun findAllByAuthorId(id: Long): List<Question> =
+            repositoryFactory.questionRepository.findAllByAuthor_Id(id)
 }

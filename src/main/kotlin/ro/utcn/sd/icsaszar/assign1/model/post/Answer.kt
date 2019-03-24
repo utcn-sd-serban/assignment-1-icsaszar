@@ -4,9 +4,7 @@ import ro.utcn.sd.icsaszar.assign1.model.User
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import javax.persistence.Entity
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 data class RawAnswerData(
@@ -29,10 +27,9 @@ class Answer(
 
 
 ) : Post(author, text, posted, id){
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id", nullable = false)
-    @NotNull
-    var answerTo: Question = Question()
+    var answerTo: Question? = null
 
     constructor(data: RawAnswerData):this(
             text = data.text,
@@ -50,9 +47,15 @@ class Answer(
         val formatter =
                 DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
         val sb: StringBuilder = StringBuilder()
-        sb.append(" ".repeat(5)).append(postText).append("\n")
+        sb.append(" ".repeat(5)).append(id.toString()).append("\n")
+            .append(" ".repeat(5)).append(postText).append("\n")
             .append(" ".repeat(5)).append(author.userName.padEnd(30))
             .append(posted.format(formatter)).append("\n")
         return sb.toString()
+    }
+
+    @PreRemove
+    fun removeAnswerTo(){
+        answerTo?.removeAnswer(this)
     }
 }

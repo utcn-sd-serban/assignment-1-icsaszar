@@ -13,20 +13,24 @@ create table if not exists post(
   posted timestamp default now(),
   author_id bigint not null references users (id)
     on update cascade
+    on delete cascade
 );
 
 create table if not exists question(
   id bigint references post (id)
-    on update cascade,
+    on update cascade
+    on delete cascade,
   title varchar(63) check ( length(title) > 2 ),
   primary key (id)
 );
 
 create table if not exists answer(
   id bigint references post (id)
-    on update cascade,
+    on update cascade
+    on delete cascade,
   question_id bigint not null references question(id)
-    on update cascade,
+    on update cascade
+    on delete cascade,
   primary key (id)
 );
 
@@ -37,7 +41,11 @@ create table if not exists tags(
 
 create table if not exists question_tag
 (
-  tag_id bigint references tags (id),
-  question_id bigint references question (id),
+  tag_id bigint references tags (id)
+    on update cascade
+    on delete cascade,
+  question_id bigint references question (id)
+    on update cascade
+    on delete cascade,
   primary key (tag_id, question_id)
 );

@@ -38,7 +38,7 @@ class AnswerInMemoryRepository(private val mainRepository: InMemoryRepository) :
             findAll().filter { it.author.id!! == id }
 
     override fun findAllByAnswerTo_Id(questionId: Long): List<Answer> =
-            mainRepository.findAllAnswers().filter { it.answerTo.id == questionId }
+            mainRepository.findAllAnswers().filter { it.answerTo!!.id == questionId }
 
     override fun save(entity: Answer): Answer = mainRepository.saveAnswer(entity)
 

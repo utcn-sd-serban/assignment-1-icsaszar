@@ -17,6 +17,19 @@ class AnswerService(private val repositoryFactory: RepositoryFactory){
         return repositoryFactory.answerRepository.save(answer)
     }
 
+    @Transactional
+    fun findAllByAuthorId(id: Long): List<Answer> =
+        repositoryFactory.answerRepository.findAllByAuthor_Id(id)
 
+    @Transactional
+    fun findById(id: Long): Answer? =
+        repositoryFactory.answerRepository.findById(id)
 
+    @Transactional
+    fun deleteAnswer(answer: Answer) =
+        repositoryFactory.answerRepository.delete(answer)
+
+    @Transactional
+    fun updateAnswer(answer: Answer) =
+        repositoryFactory.answerRepository.save(answer)
 }

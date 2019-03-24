@@ -20,9 +20,9 @@ class Question(
         author: User = User(),
         text: String = "",
         posted: LocalDateTime = LocalDateTime.now(),
+
         id: Long? = null,
 
-        @Column
         @Length(min = 3)
         var title: String = ""
 
@@ -35,7 +35,12 @@ class Question(
             inverseJoinColumns = [JoinColumn(name = "tag_id")])
     var tags: MutableSet<Tag> = mutableSetOf()
 
-    @OneToMany(mappedBy = "answerTo", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToMany(
+            mappedBy = "answerTo",
+            fetch = FetchType.EAGER,
+            cascade = [CascadeType.REMOVE, CascadeType.MERGE],
+            orphanRemoval = true
+    )
     var answers: MutableList<Answer> = mutableListOf()
 
     constructor(data: RawQuestionData):this(
@@ -60,6 +65,13 @@ class Question(
     fun addTags(tags: Set<Tag>):Question{
         tags.forEach {addTag(it)}
         return this
+    }
+
+    fun removeAnswer(answer: Answer): Boolean{
+        return if( answers.remove(answer) ){
+            answer.removeAnswerTo()
+            true
+        } else false
     }
 
     fun display(): String {

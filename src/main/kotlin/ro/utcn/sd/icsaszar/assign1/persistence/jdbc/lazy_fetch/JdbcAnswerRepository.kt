@@ -16,7 +16,7 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
             val ps: PreparedStatement =
                     conn.prepareStatement(sql)
             ps.setLong(1, entity.id!!)
-            ps.setLong(2, entity.answerTo.id!!)
+            ps.setLong(2, entity.answerTo!!.id!!)
             ps
         }
     }
