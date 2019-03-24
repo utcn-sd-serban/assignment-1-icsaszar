@@ -32,16 +32,4 @@ abstract class GenericJpaRepository<T : GenericEntity>(
     override fun findById(id: Long): T? {
         return entityManager.find(entityClass, id)
     }
-
-    //
-//
-//    @Override
-//    public void remove(Student student) {
-//        entityManager.remove(student);
-//    }
-//
-//    @Override
-//    public Optional<Student> findById(int id) {
-//        return Optional.ofNullable(entityManager.find(Student.class, id));
-//    }
 }

@@ -3,13 +3,10 @@ package ro.utcn.sd.icsaszar.assign1.controller
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Controller
 import ro.utcn.sd.icsaszar.assign1.model.User
-import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
-import ro.utcn.sd.icsaszar.assign1.persistence.api.RepositoryFactory
 import ro.utcn.sd.icsaszar.assign1.service.QuestionService
 import ro.utcn.sd.icsaszar.assign1.service.TagService
 import ro.utcn.sd.icsaszar.assign1.service.UserService
-import java.util.*
 
 @Controller
 class CommandLineController(
@@ -37,6 +34,7 @@ class CommandLineController(
                 when (cmd) {
                     "post" -> handlePost()
                     "list" -> handleList()
+                    "tags" -> handleTags()
                     "filter" -> handleFilter()
                     "answer" -> {}
                     "logout" -> {
@@ -51,6 +49,11 @@ class CommandLineController(
 
         }
 
+    }
+
+    private fun handleTags() {
+        println("Available tags:")
+        tagService.listAllTags().forEach { println(it.tagName) }
     }
 
     private fun handleFilter() {
@@ -111,10 +114,10 @@ class CommandLineController(
         while(cmd != "done"){
             if(cmd == "list") {
                 println("Available tags:")
-                tagService.listAllTags().forEach { println(it.name) }
+                tagService.listAllTags().forEach { println(it.tagName) }
             }else if (cmd == "view"){
                 println("Current tags:")
-                tags.forEach { println(it.name) }
+                tags.forEach { println(it.tagName) }
             } else if(cmd.startsWith("add ")){
                 val tagName = cmd.removePrefix("add ")
                 if(tagName.isBlank()){

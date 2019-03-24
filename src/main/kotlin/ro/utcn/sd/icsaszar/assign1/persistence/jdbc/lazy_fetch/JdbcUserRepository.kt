@@ -1,21 +1,20 @@
-package ro.utcn.sd.icsaszar.assign1.persistence.jdbc
+package ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.jdbc.support.KeyHolder
 import ro.utcn.sd.icsaszar.assign1.model.User
-import ro.utcn.sd.icsaszar.assign1.model.post.Question
-import ro.utcn.sd.icsaszar.assign1.persistence.api.GenericRepository
 import ro.utcn.sd.icsaszar.assign1.persistence.api.UserRepository
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.sql.Timestamp
+import java.sql.Statement
 
 class JdbcUserRepository(private val template: JdbcTemplate) : UserRepository{
 
     override fun findByUserName(userName: String): User? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val sql = "select * from users where users.user_name = ?"
+        return template.query(sql, UserMapper(), userName).firstOrNull()
     }
 
     private fun insert(entity: User): Long{
@@ -23,7 +22,7 @@ class JdbcUserRepository(private val template: JdbcTemplate) : UserRepository{
         val keyHolder: KeyHolder = GeneratedKeyHolder()
         template.update ( { conn ->
             val ps: PreparedStatement =
-                    conn.prepareStatement(sql)
+                    conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
             ps.setString(1, entity.userName)
             ps
 
@@ -33,8 +32,8 @@ class JdbcUserRepository(private val template: JdbcTemplate) : UserRepository{
     }
 
     private fun update(id: Long, entity: User) {
-        val sql = "update users set user_name = ?"
-        template.update(sql, entity.userName)
+        val sql = "update users set user_name = ? where users.id = ?"
+        template.update(sql, entity.userName, id)
     }
 
     override fun save(entity: User): User {
@@ -48,23 +47,26 @@ class JdbcUserRepository(private val template: JdbcTemplate) : UserRepository{
     }
 
     override fun delete(entity: User) {
-        val sql = "delete from user where id = ?"
+        val sql = "delete from users where id = ?"
         template.update(sql, entity.id!!)
     }
 
     override fun findById(id: Long): User? {
-        val sql = "select * from user where id = ?"
+        val sql = "select * from users where id = ?"
         return template.query(sql, UserMapper(), id).firstOrNull()
     }
 
     override fun findAll(): List<User> {
-        val sql = "select * from user"
+        val sql = "select * from users"
         return template.query(sql, UserMapper())
     }
 }
 
 class UserMapper : RowMapper<User> {
     override fun mapRow(rs: ResultSet, rowNum: Int): User? {
-        return User(rs.getString("user_name"))
+        return User(
+                rs.getString("user_name"),
+                rs.getLong("id")
+                )
     }
 }

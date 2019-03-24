@@ -4,13 +4,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import ro.utcn.sd.icsaszar.assign1.persistence.api.*
+import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.*
 
 @Component
 @ConditionalOnProperty(name = ["a1.repository-type"], havingValue = "JDBC")
-class JdbcRepositoryFactory(private val template: JdbcTemplate) : RepositoryFactory{
+class JdbcRepositoryFactory(template: JdbcTemplate) : RepositoryFactory{
     private val postRepository: JdbcPostRepository = JdbcPostRepository(template)
-    override val questionRepository: QuestionRepository = JdbcQuestionRepository(template, postRepository)
-    override val answerRepository: AnswerRepository = JdbcAnswerRepository(template, postRepository)
+
+    private val lazyQuestionRepository: JdbcQuestionRepository = JdbcQuestionRepository(template, postRepository)
+    private val lazyAnswerRepository: JdbcAnswerRepository = JdbcAnswerRepository(template, postRepository)
+    private val lazyUserRepository: JdbcUserRepository = JdbcUserRepository(template)
+    private val lazyTagRepository: JdbcTagRepository = JdbcTagRepository(template)
+
+    override val answerRepository: AnswerRepository = JdbcEagerFetchAnswerRepository(lazyUserRepository, lazyAnswerRepository, lazyQuestionRepository)
+    override val questionRepository: QuestionRepository = JdbcEagerFetchQuestionRepository(lazyQuestionRepository, lazyUserRepository, lazyAnswerRepository, lazyTagRepository)
     override val userRepository: UserRepository = JdbcUserRepository(template)
     override val tagRepository: TagRepository = JdbcTagRepository(template)
 }

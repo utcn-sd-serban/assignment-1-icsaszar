@@ -11,11 +11,17 @@ import ro.utcn.sd.icsaszar.assign1.persistence.api.UserRepository
 
 class QuestionInMemoryRepository(private val mainRepository: InMemoryRepository) : QuestionRepository{
 
-    override fun findAllByTitleContainsIgnoreCase(text: String): List<Question> = findAll().filter { it.title.contains(text,true) }
+    override fun findAllByAuthor_Id(id: Long): List<Question> =
+            findAll().filter { it.author.id!! == id }
 
-    override fun findAllByOrderByPostedDesc(): List<Question> = findAll().sortedByDescending { it.posted }
+    override fun findAllByTitleContainsIgnoreCase(text: String): List<Question> =
+            findAll().filter { it.title.contains(text,true) }
 
-    override fun findAllByTags(tag: Tag): List<Question> = findAll().filter { it.tags.contains(tag) }
+    override fun findAllByOrderByPostedDesc(): List<Question> =
+            findAll().sortedByDescending { it.posted }
+
+    override fun findAllByTags(tag: Tag): List<Question> =
+            findAll().filter { it.tags.contains(tag) }
 
     override fun save(entity: Question): Question = mainRepository.saveQuestion(entity)
 
@@ -28,6 +34,12 @@ class QuestionInMemoryRepository(private val mainRepository: InMemoryRepository)
 
 class AnswerInMemoryRepository(private val mainRepository: InMemoryRepository) :  AnswerRepository {
 
+    override fun findAllByAuthor_Id(id: Long): List<Answer> =
+            findAll().filter { it.author.id!! == id }
+
+    override fun findAllByAnswerTo_Id(questionId: Long): List<Answer> =
+            mainRepository.findAllAnswers().filter { it.answerTo.id == questionId }
+
     override fun save(entity: Answer): Answer = mainRepository.saveAnswer(entity)
 
     override fun delete(entity: Answer) = mainRepository.deleteAnswer(entity)
@@ -39,7 +51,11 @@ class AnswerInMemoryRepository(private val mainRepository: InMemoryRepository) :
 
 class TagInMemoryRepository(private val mainRepository: InMemoryRepository) : TagRepository {
 
-    override fun findByName(name: String): Tag? = findAll().find { it.name == name }
+    override fun findAllByQuestions_Id(id: Long): List<Tag> =
+        mainRepository.findAllTags().filter { tag -> id in tag.questions.map { it.id }}
+
+
+    override fun findByTagName(name: String): Tag? = findAll().find { it.tagName == name }
 
     override fun save(entity: Tag): Tag = mainRepository.saveTag(entity)
 
