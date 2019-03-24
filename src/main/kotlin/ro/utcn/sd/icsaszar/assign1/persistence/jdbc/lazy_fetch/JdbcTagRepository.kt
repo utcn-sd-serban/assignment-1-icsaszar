@@ -10,9 +10,9 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
 
-class JdbcTagRepository(private val template: JdbcTemplate) : TagRepository{
+class JdbcTagRepository(private val template: JdbcTemplate){
 
-    override fun findAllByQuestions_Id(id: Long): MutableList<Tag> {
+    fun findAllByQuestions_Id(id: Long): MutableList<Tag> {
         val sql = """
         select *
         from
@@ -23,7 +23,7 @@ class JdbcTagRepository(private val template: JdbcTemplate) : TagRepository{
         return template.query(sql, TagMapper(), id)
     }
 
-    override fun findByTagName(name: String): Tag? {
+    fun findByTagName(name: String): Tag? {
         val sql = "select * from tags where tag_name = ?"
         return template.query(sql, TagMapper(), name).firstOrNull()
     }
@@ -47,7 +47,7 @@ class JdbcTagRepository(private val template: JdbcTemplate) : TagRepository{
         template.update(sql, entity.tagName, id)
     }
 
-    override fun save(entity: Tag): Tag {
+    fun save(entity: Tag): Tag {
         return if (entity.id == null) {
             entity.id = insert(entity)
             entity
@@ -57,17 +57,17 @@ class JdbcTagRepository(private val template: JdbcTemplate) : TagRepository{
         }
     }
 
-    override fun delete(entity: Tag) {
+    fun delete(entity: Tag) {
         val sql = "delete from tags where id = ?"
         template.update(sql, entity.id!!)
     }
 
-    override fun findById(id: Long): Tag? {
+    fun findById(id: Long): Tag? {
         val sql = "select * from tags where id = ?"
         return template.query(sql, TagMapper(), id).firstOrNull()
     }
 
-    override fun findAll(): List<Tag> {
+    fun findAll(): List<Tag> {
         val sql = "select * from tags"
         return template.query(sql, TagMapper())
     }

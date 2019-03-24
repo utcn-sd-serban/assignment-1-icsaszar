@@ -10,9 +10,9 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
 
-class JdbcUserRepository(private val template: JdbcTemplate) : UserRepository{
+class JdbcUserRepository(private val template: JdbcTemplate){
 
-    override fun findByUserName(userName: String): User? {
+    fun findByUserName(userName: String): User? {
         val sql = "select * from users where users.user_name = ?"
         return template.query(sql, UserMapper(), userName).firstOrNull()
     }
@@ -36,7 +36,7 @@ class JdbcUserRepository(private val template: JdbcTemplate) : UserRepository{
         template.update(sql, entity.userName, id)
     }
 
-    override fun save(entity: User): User {
+    fun save(entity: User): User {
         return if (entity.id == null) {
             entity.id = insert(entity)
             entity
@@ -46,17 +46,17 @@ class JdbcUserRepository(private val template: JdbcTemplate) : UserRepository{
         }
     }
 
-    override fun delete(entity: User) {
+    fun delete(entity: User) {
         val sql = "delete from users where id = ?"
         template.update(sql, entity.id!!)
     }
 
-    override fun findById(id: Long): User? {
+    fun findById(id: Long): User? {
         val sql = "select * from users where id = ?"
         return template.query(sql, UserMapper(), id).firstOrNull()
     }
 
-    override fun findAll(): List<User> {
+    fun findAll(): List<User> {
         val sql = "select * from users"
         return template.query(sql, UserMapper())
     }

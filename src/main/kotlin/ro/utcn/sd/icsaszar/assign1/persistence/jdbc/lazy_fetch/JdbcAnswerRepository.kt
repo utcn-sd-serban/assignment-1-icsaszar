@@ -95,10 +95,10 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
           post.post_text as post_text,
           post.posted as posted,
           post.author_id as author_id,
-          question.title as title
+          answer.question_id as question_id
         from
-          post
-            inner join question on post.id = question.id
+          post inner join answer
+           on post.id = answer.id
         where
           post.author_id = ?
         """

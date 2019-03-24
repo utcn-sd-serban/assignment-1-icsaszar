@@ -10,8 +10,7 @@ import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcTagRepository
 
 class JdbcEagerFecthTagRepository(
         private val tagRepository: JdbcTagRepository,
-        private val questionRepository: JdbcQuestionRepository,
-        private val answerRepository: JdbcAnswerRepository
+        private val questionRepository: JdbcQuestionRepository
 ) : TagRepository{
     override fun findByTagName(name: String): Tag? {
         val tag = tagRepository.findByTagName(name) ?: return null

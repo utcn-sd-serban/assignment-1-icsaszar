@@ -61,9 +61,10 @@ class JdbcQuestionRepository (
           post
             inner join question on post.id = question.id
         where
-          question.title like "%?%"
+          lower(question.title) like ?
         """
-        return template.query(sql, RawQuestionMapper(), text.toLowerCase())
+        val param = "%${text.toLowerCase()}%"
+        return template.query(sql, RawQuestionMapper(), param)
     }
 
     fun findAllByOrderByPostedDesc(): List<RawQuestionData> {
@@ -93,10 +94,22 @@ class JdbcQuestionRepository (
         }
     }
 
+    private fun insertTag(questionId: Long, tagId: Long){
+        val sql = "insert into question_tag (question_id, tag_id) values (?, ?)"
+        template.update { conn ->
+            val ps: PreparedStatement =
+                    conn.prepareStatement(sql)
+            ps.setLong(1, questionId)
+            ps.setLong(2, tagId)
+            ps
+        }
+    }
+
     fun save(entity: Question): Question {
         return if (entity.id == null) {
             entity.id = postRepository.insert(entity)
             insert(entity)
+            entity.tags.forEach { insertTag(entity.id!!, it.id!!)}
             entity
         } else {
             postRepository.update(entity.id!!, entity)

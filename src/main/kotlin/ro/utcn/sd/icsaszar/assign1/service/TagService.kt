@@ -12,8 +12,8 @@ class TagService(private val repositoryFactory: RepositoryFactory){
     fun listAllTags(): List<Tag> = repositoryFactory.tagRepository.findAll()
 
     @Transactional
-    fun findTagByName(name: String): Tag? = repositoryFactory.tagRepository.findByTagName(name)
+    fun findTagByName(name: String): Tag? = repositoryFactory.tagRepository.findByTagName(name.toLowerCase())
 
     @Transactional
-    fun createTag(name: String): Tag = repositoryFactory.tagRepository.save(Tag(name))
+    fun createTag(name: String): Tag = repositoryFactory.tagRepository.save(Tag(name.toLowerCase()))
 }
