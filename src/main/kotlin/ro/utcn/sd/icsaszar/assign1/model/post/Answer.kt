@@ -25,14 +25,14 @@ class Answer(
 
         posted: LocalDateTime = LocalDateTime.now(),
 
-        id: Long? = null,
+        id: Long? = null
 
-        @ManyToOne
-        @JoinColumn(name = "question_id", nullable = false)
-        @NotNull
-        var answerTo: Question = Question()
 
 ) : Post(author, text, posted, id){
+    @ManyToOne
+    @JoinColumn(name = "question_id", nullable = false)
+    @NotNull
+    var answerTo: Question = Question()
 
     constructor(data: RawAnswerData):this(
             text = data.text,
@@ -40,13 +40,11 @@ class Answer(
             id = data.id
     )
 
-    constructor(data: RawAnswerData, author: User, answerTo: Question):this(
-            text = data.text,
-            posted = data.posted,
-            id = data.id,
-            author = author,
-            answerTo = answerTo
-    )
+    fun setQuestion(question: Question): Answer{
+        question.addAnswer(this)
+        answerTo = question
+        return this
+    }
 
     fun display(): String{
         val formatter =

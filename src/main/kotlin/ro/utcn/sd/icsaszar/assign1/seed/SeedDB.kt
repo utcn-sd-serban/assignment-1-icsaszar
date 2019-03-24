@@ -41,10 +41,10 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         println("Seeding questions")
         val questionRepository = factory.questionRepository
         val questions = mutableListOf<Question>()
-        questions += Question(users[0], "^Title", title = "How do i even", tags = mutableSetOf(tags[3]))
+        questions += Question(users[0], "^Title", title = "How do i even").addTag(tags[3])
         questions += Question(users[0], "Ubuntu is so bad like you can't even install an exe, like no wonder nobody uses it", title = "Why can'i i install an exe on ubuntu")
-        questions += Question(users[1], "Pls help the deadline is tomorrow", title = "Help my program keeps crashing")
-        questions += Question(users[2], "My hands hurt from so much typing",title = "Why is java so verbose?", tags = mutableSetOf(tags[0]))
+        questions += Question(users[1], "Pls help the deadline is tomorrow", title = "Help my program keeps crashing").addTag(tags[3])
+        questions += Question(users[2], "My hands hurt from so much typing",title = "Why is java so verbose?").addTag(tags[0])
         questionRepository.apply {
             if(findAll().isEmpty()) {
                 questions.forEach {save(it)}
@@ -54,14 +54,17 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         println("Seeding answers")
         val answerRepository = factory.answerRepository
         val answers = mutableListOf<Answer>()
-        answers += Answer(users[2], "Yes", answerTo = questions[0])
-        answers += Answer(users[1], "No", answerTo = questions[0])
-        answers += Answer(users[2], "Dude...", answerTo = questions[1])
-        answers += Answer(users[0], "I have the same problem", answerTo = questions[2])
-        answers += Answer(users[0], "Never mind i figured it out", answerTo = questions[0])
+        answers += Answer(users[2], "Yes").setQuestion(questions[0])
+        answers += Answer(users[1], "No").setQuestion(questions[0])
+        answers += Answer(users[2], "Dude...").setQuestion(questions[1])
+        answers += Answer(users[0], "I have the same problem").setQuestion(questions[2])
+        answers += Answer(users[0], "Never mind i figured it out").setQuestion(questions[0])
         answerRepository.apply {
             if(findAll().isEmpty()){
-                answers.forEach { save(it) }
+                answers.forEach {
+                    println("Saved ${it.display()}")
+                    save(it)
+                }
             }
         }
     }

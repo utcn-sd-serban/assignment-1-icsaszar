@@ -17,8 +17,11 @@ class QuestionService(private val repositoryFactory: RepositoryFactory){
     fun listAllQuestionsByPosted(): List<Question> = repositoryFactory.questionRepository.findAllByOrderByPostedDesc()
 
     @Transactional
-    fun postQuestion(author: User, title: String, text: String, tags: Set<Tag>): Question =
-        repositoryFactory.questionRepository.save(Question(author, text, title = title, tags = tags.toMutableSet()))
+    fun postQuestion(author: User, title: String, text: String, tags: Set<Tag>): Question{
+        val question = Question(author, text, title = title)
+        question.addTags(tags)
+        return repositoryFactory.questionRepository.save(question)
+    }
 
     @Transactional
     fun findAllByTag(tag: Tag): List<Question> =

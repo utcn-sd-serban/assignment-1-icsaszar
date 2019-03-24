@@ -38,8 +38,8 @@ class JdbcEagerFetchUserRepository(
     private fun assembleUser(user: User): User?{
         val questions = questionRepository.findAllByAuthor_Id(user.id!!).map { Question(it) }
         val answers = answerRepository.findAllByAuthor_Id(user.id!!).map { Answer(it) }
-        user.posts.addAll(questions)
-        user.posts.addAll(answers)
+        user.addPosts(questions)
+        user.addPosts(answers)
         return user
     }
 }

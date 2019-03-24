@@ -15,7 +15,19 @@ data class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override var id: Long? = null,
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", cascade = [(CascadeType.ALL)])
     var posts: MutableList<Post> = mutableListOf()
+
 ) : GenericEntity {
+
+    fun addPost(post: Post): User{
+        posts.add(post)
+        post.author = this
+        return this
+    }
+
+    fun addPosts(posts: List<Post>):User{
+        posts.forEach { addPost(it) }
+        return this
+    }
 }

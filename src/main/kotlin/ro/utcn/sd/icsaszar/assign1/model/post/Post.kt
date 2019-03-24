@@ -25,4 +25,9 @@ abstract class Post(
         override var id: Long? = null
 ) : GenericEntity {
 
+    open fun setAuthor(author: User): Post{
+        this.author = author
+        author.posts.add(this)
+        return this
+    }
 }

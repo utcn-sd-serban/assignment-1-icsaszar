@@ -19,5 +19,5 @@ class JdbcRepositoryFactory(template: JdbcTemplate) : RepositoryFactory{
     override val answerRepository: AnswerRepository = JdbcEagerFetchAnswerRepository(lazyUserRepository, lazyAnswerRepository, lazyQuestionRepository)
     override val questionRepository: QuestionRepository = JdbcEagerFetchQuestionRepository(lazyQuestionRepository, lazyUserRepository, lazyAnswerRepository, lazyTagRepository)
     override val userRepository: UserRepository = JdbcEagerFetchUserRepository(lazyUserRepository, lazyAnswerRepository, lazyQuestionRepository)
-    override val tagRepository: TagRepository = JdbcEagerFecthTagRepository(lazyTagRepository, lazyQuestionRepository)
+    override val tagRepository: TagRepository = JdbcEagerFetchTagRepository(lazyTagRepository, lazyQuestionRepository)
 }

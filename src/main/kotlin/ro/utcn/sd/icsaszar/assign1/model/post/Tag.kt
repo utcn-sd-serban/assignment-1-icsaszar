@@ -9,11 +9,20 @@ data class Tag(
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        override var id: Long? = null,
+        override var id: Long? = null
 
-        @ManyToMany(mappedBy = "tags")
-        var questions: MutableList<Question> = mutableListOf()
 ): GenericEntity {
+        @ManyToMany(mappedBy = "tags", cascade = [CascadeType.ALL])
+        var questions: MutableList<Question> = mutableListOf()
 
+    fun addQuestion(question: Question): Tag{
+        question.addTag(this)
+        questions.add(question)
+        return this
+    }
 
+    fun addQuestions(questions: List<Question>): Tag{
+        questions.forEach { addQuestion(it) }
+        return this
+    }
 }

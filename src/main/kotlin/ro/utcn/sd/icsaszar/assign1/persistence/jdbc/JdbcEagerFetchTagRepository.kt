@@ -8,22 +8,18 @@ import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcPostRepositor
 import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcQuestionRepository
 import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcTagRepository
 
-class JdbcEagerFecthTagRepository(
+class JdbcEagerFetchTagRepository(
         private val tagRepository: JdbcTagRepository,
         private val questionRepository: JdbcQuestionRepository
 ) : TagRepository{
     override fun findByTagName(name: String): Tag? {
         val tag = tagRepository.findByTagName(name) ?: return null
-        tag.questions = questionRepository.findAllByTags(tag).map {Question(it)}.toMutableList()
-        return tag
+        return assembleTag(tag)
     }
 
     override fun findAllByQuestions_Id(id: Long): List<Tag> {
         val tags = tagRepository.findAllByQuestions_Id(id)
-        return tags.map {tag ->
-            tag.questions = questionRepository.findAllByTags(tag).map { Question(it) }.toMutableList()
-            tag
-        }
+        return tags.map { assembleTag(it) }
     }
 
     override fun save(entity: Tag): Tag =
@@ -32,10 +28,21 @@ class JdbcEagerFecthTagRepository(
     override fun delete(entity: Tag) =
         tagRepository.delete(entity)
 
-    override fun findById(id: Long): Tag? =
-        tagRepository.findById(id)
+    override fun findById(id: Long): Tag? {
+        val tag = tagRepository.findById(id) ?: return null
+        return assembleTag(tag)
+    }
 
-    override fun findAll(): List<Tag> =
-        tagRepository.findAll()
+    override fun findAll(): List<Tag> {
+        val tags = tagRepository.findAll()
+        return tags.map {assembleTag(it)}
+    }
 
+    private fun assembleTag(tag: Tag): Tag {
+        questionRepository.findAllByTags(tag).forEach {
+            val q = Question(it)
+            tag.addQuestion(q)
+        }
+        return tag
+    }
 }

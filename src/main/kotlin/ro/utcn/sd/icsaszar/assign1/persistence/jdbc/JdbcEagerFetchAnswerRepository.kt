@@ -38,12 +38,17 @@ class JdbcEagerFetchAnswerRepository(
         return answers.mapNotNull { assembleAnswer(it) }
     }
 
-    private fun assembleAnswer(answer: RawAnswerData): Answer?{
-        val user = userRepository.findById(answer.authorId)
-        val question = questionRepository.findById(answer.questionId)
+    private fun assembleAnswer(answerData: RawAnswerData): Answer?{
+        val user = userRepository.findById(answerData.authorId)
+        val questionData = questionRepository.findById(answerData.questionId)
         return if(user != null)
-            if(question!=null)
-                Answer(answer, user, Question(question))
+            if(questionData != null){
+                val question: Question = Question(questionData)
+                val answer = Answer(answerData)
+                answer.setQuestion(question)
+                answer.setAuthor(user)
+                answer
+            }
             else null
         else
             null

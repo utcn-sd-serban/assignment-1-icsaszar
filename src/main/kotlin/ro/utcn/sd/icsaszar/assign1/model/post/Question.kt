@@ -24,19 +24,19 @@ class Question(
 
         @Column
         @Length(min = 3)
-        var title: String = "",
-
-        @ManyToMany(fetch = FetchType.EAGER)
-        @JoinTable(name = "question_tag",
-                joinColumns = [JoinColumn(name = "question_id")],
-                inverseJoinColumns = [JoinColumn(name = "tag_id")])
-        var tags: MutableSet<Tag> = mutableSetOf(),
-
-        @OneToMany(mappedBy = "answerTo", fetch = FetchType.EAGER)
-        var answers: MutableList<Answer> = mutableListOf()
+        var title: String = ""
 
 
         ) : Post(author, text, posted, id){
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @JoinTable(name = "question_tag",
+            joinColumns = [JoinColumn(name = "question_id")],
+            inverseJoinColumns = [JoinColumn(name = "tag_id")])
+    var tags: MutableSet<Tag> = mutableSetOf()
+
+    @OneToMany(mappedBy = "answerTo", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    var answers: MutableList<Answer> = mutableListOf()
 
     constructor(data: RawQuestionData):this(
             text = data.text,
@@ -45,8 +45,21 @@ class Question(
             title = data.title
     )
 
-    fun addAnswer(answer: Answer){
+    fun addAnswer(answer: Answer):Question{
+        answer.answerTo = this
         answers.add(answer)
+        return this
+    }
+
+    fun addTag(tag: Tag): Question{
+        tag.questions.add(this)
+        tags.add(tag)
+        return this
+    }
+
+    fun addTags(tags: Set<Tag>):Question{
+        tags.forEach {addTag(it)}
+        return this
     }
 
     fun display(): String {

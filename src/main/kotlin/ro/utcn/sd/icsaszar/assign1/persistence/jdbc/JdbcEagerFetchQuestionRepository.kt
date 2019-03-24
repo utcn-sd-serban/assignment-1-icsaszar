@@ -58,10 +58,11 @@ class JdbcEagerFetchQuestionRepository(
         val user = userRepository.findById(questionData.authorId)
         return if (user != null){
             val question = Question(questionData)
-            val answers = answerRepository.findAllByAnswerTo_Id(questionData.id).map { Answer(it, user, question) }
-            question.answers = answers.toMutableList()
-            question.author = user
-            question.tags = tagRepository.findAllByQuestions_Id(questionData.id).toMutableSet()
+            answerRepository.findAllByAnswerTo_Id(questionData.id).map { Answer(it) }
+                    .forEach {question.addAnswer(it)}
+            question.setAuthor(user)
+            val tags = tagRepository.findAllByQuestions_Id(questionData.id).toMutableSet()
+            question.addTags(tags)
             question
         } else
             null

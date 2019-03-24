@@ -7,8 +7,8 @@ import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 
 abstract class GenericJpaRepository<T : GenericEntity>(
-        private val entityManager: EntityManager,
-        private val entityClass: Class<T>): GenericRepository<T> {
+        protected val entityManager: EntityManager,
+        protected val entityClass: Class<T>): GenericRepository<T> {
     override fun save(entity: T): T {
         return if(entity.id == null){
             entityManager.persist(entity)
