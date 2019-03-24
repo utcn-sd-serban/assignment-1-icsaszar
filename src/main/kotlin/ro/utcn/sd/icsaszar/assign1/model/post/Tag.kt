@@ -12,7 +12,7 @@ data class Tag(
         override var id: Long? = null
 
 ): GenericEntity {
-        @ManyToMany(mappedBy = "tags", cascade = [CascadeType.ALL])
+        @ManyToMany(mappedBy = "tags", cascade = [CascadeType.MERGE], fetch = FetchType.EAGER)
         var questions: MutableList<Question> = mutableListOf()
 
     fun addQuestion(question: Question): Tag{

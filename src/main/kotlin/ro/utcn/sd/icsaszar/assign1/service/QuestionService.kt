@@ -30,4 +30,8 @@ class QuestionService(private val repositoryFactory: RepositoryFactory){
     @Transactional
     fun findAllByTitleContaining(text: String): List<Question> =
         repositoryFactory.questionRepository.findAllByTitleContainsIgnoreCase(text)
+
+    @Transactional
+    fun findById(id: Long): Question? =
+        repositoryFactory.questionRepository.findById(id)
 }

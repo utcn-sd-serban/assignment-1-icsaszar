@@ -29,7 +29,7 @@ class Question(
 
         ) : Post(author, text, posted, id){
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.MERGE])
     @JoinTable(name = "question_tag",
             joinColumns = [JoinColumn(name = "question_id")],
             inverseJoinColumns = [JoinColumn(name = "tag_id")])
@@ -66,7 +66,8 @@ class Question(
         val formatter =
                 DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
         val sb: StringBuilder = StringBuilder()
-        sb.append(title).append("\n")
+        sb.append(id.toString().padEnd(5))
+            .append(title).append("\n")
             .append(postText).append("\n")
             .append(author.userName.padEnd(30))
             .append(posted.format(formatter)).append("\n")

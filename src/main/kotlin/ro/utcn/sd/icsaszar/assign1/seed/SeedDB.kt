@@ -62,7 +62,6 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         answerRepository.apply {
             if(findAll().isEmpty()){
                 answers.forEach {
-                    println("Saved ${it.display()}")
                     save(it)
                 }
             }

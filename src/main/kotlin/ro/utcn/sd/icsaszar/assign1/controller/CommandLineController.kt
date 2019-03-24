@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Controller
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
+import ro.utcn.sd.icsaszar.assign1.service.AnswerService
 import ro.utcn.sd.icsaszar.assign1.service.QuestionService
 import ro.utcn.sd.icsaszar.assign1.service.TagService
 import ro.utcn.sd.icsaszar.assign1.service.UserService
@@ -12,6 +13,7 @@ import ro.utcn.sd.icsaszar.assign1.service.UserService
 class CommandLineController(
        private val userService: UserService,
        private val questionService: QuestionService,
+       private val answerService: AnswerService,
        private val tagService: TagService
 ) : CommandLineRunner{
     private var currentUser: User? = null
@@ -36,7 +38,7 @@ class CommandLineController(
                     "list" -> handleList()
                     "tags" -> handleTags()
                     "filter" -> handleFilter()
-                    "answer" -> {}
+                    "view" -> handleView()
                     "logout" -> {
                         println("Logging out")
                         currentUser = null
@@ -49,6 +51,43 @@ class CommandLineController(
 
         }
 
+    }
+
+    private fun handleAnswer() {
+
+    }
+
+    private fun handleView() {
+        println("[view] Type the id of a question to view it")
+        print("[view] Id: ")
+        var cmd = readLine()!!
+        val question = questionService.findById(cmd.toLong())
+        if(question == null){
+            println("[view] No such question")
+            return
+        }
+
+        println(question.display())
+        question.answers.forEach {
+            println(it.display())
+        }
+
+        println("[view] Type answer to submit an answer to this question")
+        println("[view] Type done to exit")
+
+        cmd = readLine()!!
+
+        while(cmd != "done"){
+            if(cmd == "answer"){
+                println("[answer] Type answer text:")
+                cmd = readLine()!!
+                answerService.submitAnswer(cmd, currentUser!!, question)
+                println("[answer] Answer submitted")
+            } else{
+              println("[answer] Invalid command")
+            }
+            cmd = readLine()!!
+        }
     }
 
     private fun handleTags() {
@@ -98,30 +137,30 @@ class CommandLineController(
     }
 
     private fun handlePost() {
-        println("Type your post title")
+        println("[post] Type your post title")
         print("[post] Title: ")
         val title = readLine()!!
-        println("Type your post postText")
+        println("[post] Type your post text")
         print("[post] Text: ")
         val text = readLine()!!
-        println("Type add <tag-name> to add a tag")
-        println("Type list to view a list of available tags")
-        println("Type view to view a the tags added")
-        println("Type done to continue")
+        println("[post] Type add <tag-name> to add a tag")
+        println("[post] Type list to view a list of available tags")
+        println("[post] Type view to view a the tags added")
+        println("[post] Type done to continue")
         print("[post] Tags: ")
         val tags = mutableSetOf<Tag>()
         var cmd = readLine()!!
         while(cmd != "done"){
             if(cmd == "list") {
-                println("Available tags:")
+                println("[post] Available tags:")
                 tagService.listAllTags().forEach { println(it.tagName) }
             }else if (cmd == "view"){
-                println("Current tags:")
+                println("[post] Current tags:")
                 tags.forEach { println(it.tagName) }
             } else if(cmd.startsWith("add ")){
                 val tagName = cmd.removePrefix("add ")
                 if(tagName.isBlank()){
-                    println("Please enter a tag name")
+                    println("[post] Please enter a tag name")
                     cmd = readLine()!!
                     continue
                 }
@@ -134,11 +173,11 @@ class CommandLineController(
                         println("[post] Tag $tagName has already been added")
                 } else {
                     println("[post] Tag $tagName does not exist, would you like to add it?")
-                    print("[post] Create tag: ")
+                    print("[post] Create tag $tagName: ")
                     cmd = readLine()!!
                     while((cmd != "yes") and (cmd != "no")){
                         println("Please type yes or no")
-                        print("[post] Create tag: ")
+                        print("[post] Create tag $tagName: ")
                         cmd = readLine()!!
                     }
 
@@ -150,11 +189,16 @@ class CommandLineController(
                 }
             }
             else{
-                println("Invalid command")
+                println("[post] Invalid command")
             }
+            println("[post] Type add <tag-name> to add a tag")
+            println("[post] Type list to view a list of available tags")
+            println("[post] Type view to view a the tags added")
+            println("[post] Type done to continue")
+            print("[post] Tags: ")
             cmd = readLine()!!
         }
-        println("Your question has been posted!")
+        println("[post] Your question has been posted!")
         questionService.postQuestion(currentUser!!, title, text, tags)
 
     }
@@ -162,16 +206,12 @@ class CommandLineController(
     private fun handleList() {
         questionService.listAllQuestionsByPosted().forEach {q ->
             println(q.display())
-//            q.answers.forEach {a ->
-//                println(a.display())
-//                println()
-//            }
             println("".padEnd(100, '-'))
         }
     }
 
     private fun handleHelp(){
-        val l = listOf("logout", "post", "list", "answer", "help", "filter")
+        val l = listOf("logout", "post", "list", "answer", "help", "filter", "view")
         println("The available commands are:")
         l.forEach { println(it) }
     }

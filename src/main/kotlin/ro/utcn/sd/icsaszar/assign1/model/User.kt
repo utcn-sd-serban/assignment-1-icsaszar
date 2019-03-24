@@ -9,6 +9,7 @@ import javax.persistence.*
 @Table(name = "users")
 data class User(
     @Length(min = 3)
+    @Column(unique = true)
     var userName: String = "",
 
     @Id

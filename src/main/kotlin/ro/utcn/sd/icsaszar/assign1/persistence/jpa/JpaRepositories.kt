@@ -9,6 +9,7 @@ import ro.utcn.sd.icsaszar.assign1.persistence.api.QuestionRepository
 import ro.utcn.sd.icsaszar.assign1.persistence.api.TagRepository
 import ro.utcn.sd.icsaszar.assign1.persistence.api.UserRepository
 import javax.persistence.EntityManager
+import javax.persistence.NoResultException
 
 class QuestionJpaRepository(entityManager: EntityManager):
         GenericJpaRepository<Question>(entityManager, Question::class.java), QuestionRepository{
@@ -50,20 +51,28 @@ class AnswerJpaRepository(entityManager: EntityManager):
 class UserJpaRepository(entityManager: EntityManager):
         GenericJpaRepository<User>(entityManager, User::class.java), UserRepository{
     override fun findByUserName(userName: String): User? =
-            entityManager.createQuery("select u from User u where u.userName = ?1", entityClass)
-                    .setParameter(1, userName)
-                    .singleResult
+            try{
+                entityManager.createQuery("select u from User u where u.userName = ?1", entityClass)
+                        .setParameter(1, userName)
+                        .singleResult
+            }catch (e: NoResultException){
+                null
+            }
 }
 
 class TagJpaRepository(entityManager: EntityManager):
         GenericJpaRepository<Tag>(entityManager, Tag::class.java), TagRepository {
     override fun findByTagName(name: String): Tag? =
-            entityManager.createQuery("select t from Tag t where t.tagName = ?1", entityClass)
-                    .setParameter(1, name)
-                    .singleResult
+            try{
+                entityManager.createQuery("select t from tags t where t.tagName = ?1", entityClass)
+                        .setParameter(1, name)
+                        .singleResult
+            }catch (e: NoResultException){
+                null
+            }
 
     override fun findAllByQuestions_Id(id: Long): List<Tag> =
-            entityManager.createQuery("select t from Tag t join t.questions q where q.id = ?1", entityClass)
+            entityManager.createQuery("select t from tags t join t.questions q where q.id = ?1", entityClass)
                     .setParameter(1, id)
                     .resultList
 }
