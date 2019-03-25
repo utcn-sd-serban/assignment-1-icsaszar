@@ -55,7 +55,7 @@ class CommandLineController(
     }
 
     private fun handleAccount() {
-        do {
+       main_loop@ do {
             println("[account] Type q to view a list of your questions")
             println("[account] Type a to view a list of your answers")
             println("[account] Type manage to edit or delete an answer")
@@ -79,12 +79,21 @@ class CommandLineController(
                 "manage" -> {
                     println("[account] [manage] Type the id of the question you would like to manage")
                     cmd = readLine()!!
-                    val id = cmd.toLong()
+                    val id = cmd.toLongOrNull()
+                    if(id == null){
+                        println("[account] [manage] Please type a number")
+                        continue@main_loop
+                    }
                     val answers = answerService.findAllByAuthorId(currentUser!!.id!!)
-                    val answer = answers.find { it.author.id!! == currentUser!!.id!! }
+                    val answer = answerService.findById(id)
+
                     if(answer == null){
                         println("[account] [manage] Answer with id: $id not found")
-                    }else{
+                        continue@main_loop
+                    }else if(answer !in answers){
+                        println("[account] [manage] Answer with id: $id not found")
+                        continue@main_loop
+                    } else {
                         println(answer.answerTo!!.display())
                         println(answer.display())
                         println("[account] [manage] Type delete to delete this question")

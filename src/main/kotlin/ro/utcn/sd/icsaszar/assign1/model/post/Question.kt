@@ -29,6 +29,10 @@ class Question(
 
         ) : Post(author, text, posted, id){
 
+    init {
+        author.addPost(this)
+    }
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.MERGE])
     @JoinTable(name = "question_tag",
             joinColumns = [JoinColumn(name = "question_id")],
@@ -41,7 +45,7 @@ class Question(
             cascade = [CascadeType.REMOVE, CascadeType.MERGE],
             orphanRemoval = true
     )
-    var answers: MutableList<Answer> = mutableListOf()
+    var answers: MutableSet<Answer> = mutableSetOf()
 
     constructor(data: RawQuestionData):this(
             text = data.text,

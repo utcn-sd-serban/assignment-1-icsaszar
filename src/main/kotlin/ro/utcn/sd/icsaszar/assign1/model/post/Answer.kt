@@ -31,6 +31,10 @@ class Answer(
     @JoinColumn(name = "question_id", nullable = false)
     var answerTo: Question? = null
 
+    init {
+        author.addPost(this)
+    }
+
     constructor(data: RawAnswerData):this(
             text = data.text,
             posted = data.posted,
@@ -54,8 +58,13 @@ class Answer(
         return sb.toString()
     }
 
-    @PreRemove
     fun removeAnswerTo(){
         answerTo?.removeAnswer(this)
     }
+
+    override fun hashCode(): Int {
+        return answerTo?.hashCode() ?: 0
+    }
+
+
 }

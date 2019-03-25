@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 class InMemoryRepository {
     private val questionData: ConcurrentMap<Long, Question> = ConcurrentHashMap()
+    private val answerData: ConcurrentMap<Long, Answer> = ConcurrentHashMap()
     private val userData: ConcurrentMap<Long, User> = ConcurrentHashMap()
     private val tagData: ConcurrentMap<Long, Tag> = ConcurrentHashMap()
     private val currentQuestionId: AtomicLong = AtomicLong(0)
@@ -60,25 +61,27 @@ class InMemoryRepository {
     fun findAllQuestions(): List<Question> =
         findAll(questionData)
 
+
     fun saveAnswer(answer: Answer): Answer {
         if(answer.id == null)
             answer.id = currentAnswerId.getAndIncrement()
 
-        questionData[answer.answerTo!!.id]!!.answers.add(answer)
+        answerData[answer.id!!] = answer
+        questionData[answer.answerTo!!.id!!]?.addAnswer(answer)
 
         userData[answer.author.id]!!.posts.add(answer)
         return answer
     }
 
     fun deleteAnswer(answer: Answer) {
-        questionData[answer.answerTo!!.id]!!.answers.remove(answer)
+        answerData.remove(answer.id!!)
     }
 
     fun findAnswerById(id: Long): Answer? =
-        questionData.values.flatMap { q -> q.answers }.first { it.id == id }
+        answerData[id]
 
     fun findAllAnswers(): List<Answer> =
-        questionData.values.flatMap { q -> q.answers }
+        answerData.values.toList()
 
     fun saveUser(user: User): User =
         save(user, currentUserId, userData)

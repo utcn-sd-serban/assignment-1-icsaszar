@@ -17,7 +17,7 @@ data class User(
     override var id: Long? = null,
 
     @OneToMany(mappedBy = "author", cascade = [(CascadeType.ALL)])
-    var posts: MutableList<Post> = mutableListOf()
+    var posts: MutableSet<Post> = HashSet()
 
 ) : GenericEntity {
 

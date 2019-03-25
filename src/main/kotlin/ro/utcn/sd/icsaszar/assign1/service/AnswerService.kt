@@ -26,8 +26,10 @@ class AnswerService(private val repositoryFactory: RepositoryFactory){
         repositoryFactory.answerRepository.findById(id)
 
     @Transactional
-    fun deleteAnswer(answer: Answer) =
+    fun deleteAnswer(answer: Answer) {
+        answer.removeAnswerTo()
         repositoryFactory.answerRepository.delete(answer)
+    }
 
     @Transactional
     fun updateAnswer(answer: Answer) =
