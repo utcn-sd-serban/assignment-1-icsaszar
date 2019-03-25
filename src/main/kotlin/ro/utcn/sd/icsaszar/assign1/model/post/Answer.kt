@@ -27,7 +27,7 @@ class Answer(
 
 
 ) : Post(author, text, posted, id){
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id", nullable = false)
     var answerTo: Question? = null
 
@@ -63,7 +63,14 @@ class Answer(
     }
 
     override fun hashCode(): Int {
-        return answerTo?.hashCode() ?: 0
+        return 31
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Answer) return false
+
+        return id?.equals(other.id) ?: false
     }
 
 

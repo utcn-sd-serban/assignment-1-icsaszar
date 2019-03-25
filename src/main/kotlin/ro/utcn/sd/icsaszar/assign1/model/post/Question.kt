@@ -89,4 +89,15 @@ class Question(
             .append(posted.format(formatter)).append("\n")
         return sb.toString()
     }
+
+    override fun hashCode(): Int {
+        return 31
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Question) return false
+
+        return id?.equals(other.id) ?: false
+    }
 }

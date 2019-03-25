@@ -19,9 +19,12 @@ abstract class GenericJpaRepository<T : GenericEntity>(
     }
 
     override fun delete(entity: T) {
-        val toDelete = entityManager.find(entityClass, entity.id!!)!!
-        println("-".repeat(100))
-        entityManager.remove(toDelete)
+        if (entityManager.contains(entity))
+            entityManager.remove(entity)
+        else{
+            val toDelete = entityManager.merge(entity)
+            entityManager.remove(toDelete)
+        }
     }
 
     override fun findAll(): List<T> {
