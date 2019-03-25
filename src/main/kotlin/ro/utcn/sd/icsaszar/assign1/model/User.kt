@@ -16,7 +16,7 @@ data class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override var id: Long? = null,
 
-    @OneToMany(mappedBy = "author", cascade = [(CascadeType.ALL)])
+    @OneToMany(mappedBy = "author", cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
     var posts: MutableSet<Post> = HashSet()
 
 ) : GenericEntity {

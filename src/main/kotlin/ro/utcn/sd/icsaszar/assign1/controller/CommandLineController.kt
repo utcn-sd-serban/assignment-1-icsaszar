@@ -77,7 +77,7 @@ class CommandLineController(
                     }
                 }
                 "manage" -> {
-                    println("[account] [manage] Type the id of the question you would like to manage")
+                    println("[account] [manage] Type the id of the answer you would like to manage")
                     cmd = readLine()!!
                     val id = cmd.toLongOrNull()
                     if(id == null){
@@ -96,8 +96,8 @@ class CommandLineController(
                     } else {
                         println(answer.answerTo!!.display())
                         println(answer.display())
-                        println("[account] [manage] Type delete to delete this question")
-                        println("[account] [manage] Type edit to edit this question")
+                        println("[account] [manage] Type delete to delete this answer")
+                        println("[account] [manage] Type edit to edit this answer")
                         cmd = readLine()!!
                         when (cmd){
                             "edit" -> {
