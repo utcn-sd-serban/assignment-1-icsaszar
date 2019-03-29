@@ -26,7 +26,6 @@ class Question(
         @Length(min = 3)
         var title: String = ""
 
-
         ) : Post(author, text, posted, id){
 
     init {
