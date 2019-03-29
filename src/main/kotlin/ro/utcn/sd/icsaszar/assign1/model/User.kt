@@ -17,7 +17,11 @@ data class User(
     override var id: Long? = null,
 
     @OneToMany(mappedBy = "author", cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
-    var posts: MutableSet<Post> = HashSet()
+    var posts: MutableSet<Post> = HashSet(),
+
+    var isBanned: Boolean = false,
+
+    var isMod: Boolean = false
 
 ) : GenericEntity {
 
