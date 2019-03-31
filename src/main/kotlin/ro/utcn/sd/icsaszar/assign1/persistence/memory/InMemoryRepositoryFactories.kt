@@ -13,4 +13,5 @@ class InMemoryRepositoryFactory : RepositoryFactory {
     override val answerRepository: AnswerRepository = AnswerInMemoryRepository(mainRepository)
     override val userRepository: UserRepository = UserInMemoryRepository(mainRepository)
     override val tagRepository: TagRepository = TagInMemoryRepository(mainRepository)
+    override val voteRepository: VoteRepository = VoteInMemoryRepository(mainRepository)
 }

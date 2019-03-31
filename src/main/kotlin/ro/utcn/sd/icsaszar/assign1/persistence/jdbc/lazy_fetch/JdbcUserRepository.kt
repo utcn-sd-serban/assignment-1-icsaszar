@@ -66,7 +66,9 @@ class UserMapper : RowMapper<User> {
     override fun mapRow(rs: ResultSet, rowNum: Int): User? {
         return User(
                 rs.getString("user_name"),
-                rs.getLong("id")
+                rs.getLong("id"),
+                isMod =  rs.getBoolean("is_mod"),
+                isBanned = rs.getBoolean("is_banned")
                 )
     }
 }

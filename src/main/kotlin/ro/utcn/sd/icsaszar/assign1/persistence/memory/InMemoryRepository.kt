@@ -2,10 +2,12 @@ package ro.utcn.sd.icsaszar.assign1.persistence.memory
 
 import ro.utcn.sd.icsaszar.assign1.model.GenericEntity
 import ro.utcn.sd.icsaszar.assign1.model.User
+import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.atomic.AtomicLong
 
@@ -14,6 +16,7 @@ class InMemoryRepository {
     private val answerData: ConcurrentMap<Long, Answer> = ConcurrentHashMap()
     private val userData: ConcurrentMap<Long, User> = ConcurrentHashMap()
     private val tagData: ConcurrentMap<Long, Tag> = ConcurrentHashMap()
+    private val voteData: ConcurrentLinkedQueue<Vote> = ConcurrentLinkedQueue()
     private val currentQuestionId: AtomicLong = AtomicLong(0)
     private val currentUserId: AtomicLong = AtomicLong(0)
     private val currentAnswerId: AtomicLong = AtomicLong(0)
@@ -35,7 +38,7 @@ class InMemoryRepository {
     private fun <T : GenericEntity>findById(id: Long, data: MutableMap<Long,T>): T? =
         data[id]
 
-    private fun <T : GenericEntity>findAll(data: MutableMap<Long,T>): List<T> =
+    private fun <T : GenericEntity>findAllVotes(data: MutableMap<Long,T>): List<T> =
         data.values.toList()
 
 
@@ -59,7 +62,7 @@ class InMemoryRepository {
         findById(id, questionData)
 
     fun findAllQuestions(): List<Question> =
-        findAll(questionData)
+        findAllVotes(questionData)
 
 
     fun saveAnswer(answer: Answer): Answer {
@@ -93,7 +96,7 @@ class InMemoryRepository {
         findById(id, userData)
 
     fun findAllUsers(): List<User> =
-        findAll(userData)
+        findAllVotes(userData)
 
     fun saveTag(tag: Tag): Tag =
         save(tag, currentTagId, tagData)
@@ -105,5 +108,26 @@ class InMemoryRepository {
         findById(id, tagData)
 
     fun findAllTags(): List<Tag> =
-        findAll(tagData)
+        findAllVotes(tagData)
+
+    fun saveVote(vote: Vote): Vote{
+        voteData += vote
+        return vote
+    }
+
+    fun deleteVote(vote: Vote){
+        voteData -= vote
+    }
+
+    fun findAllVotes(): List<Vote> =
+        voteData.toList()
+
+    fun findVotesByUserId(userId: Long): List<Vote> =
+        voteData.filter { it.user.id!! == userId }
+
+    fun findVotesByPostId(postId: Long): List<Vote> =
+        voteData.filter { it.post.id!! == postId }
+
+    fun getScoreForPost(postId: Long): Int =
+        voteData.sumBy { it.vote.toInt() }
 }
