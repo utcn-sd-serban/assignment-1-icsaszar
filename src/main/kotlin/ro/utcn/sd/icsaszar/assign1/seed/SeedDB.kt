@@ -24,11 +24,11 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
     override fun run(vararg args: String) {
         println("Seeding users")
         //http://www.optipess.com/2018/10/15/titsmcgee4782/
-        val users = listOf(User("TitsMcGee4782"), User("User2"), User("User3"))
+        val users = mutableListOf(User("TitsMcGee4782"), User("User2"), User("User3"))
         val userRepository = factory.userRepository
         userRepository.apply {
             if (findAll().isEmpty()) {
-                users.forEach { save(it) }
+                users.replaceAll { save(it) }
             }
         }
         println("Seeding tags")
@@ -49,7 +49,7 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         questions += Question(users[2], "My hands hurt from so much typing",title = "Why is java so verbose?").addTag(tags[0])
         questionRepository.apply {
             if(findAll().isEmpty()) {
-                questions.forEach {save(it)}
+                questions.replaceAll {save(it)}
             }
         }
 
@@ -63,9 +63,7 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         answers += Answer(users[0], "Never mind i figured it out").setQuestion(questions[0])
         answerRepository.apply {
             if(findAll().isEmpty()){
-                answers.forEach {
-                    save(it)
-                }
+                answers.replaceAll { save(it) }
             }
         }
 
@@ -73,6 +71,8 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         val voteRepository = factory.voteRepository
         val votes = mutableListOf<Vote>()
         votes += Vote(questions[0], users[0], 1)
+        votes += Vote(questions[0], users[1], -1)
+        votes += Vote(questions[0], users[2], -1)
         votes += Vote(questions[2], users[1], 1)
         voteRepository.apply {
             if(findAll().isEmpty()){

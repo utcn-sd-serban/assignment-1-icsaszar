@@ -32,6 +32,14 @@ class JdbcEagerFetchVoteRepository(
     override fun getScoreForPost(postId: Long): Int =
         voteRepository.getScoreForPost(postId)
 
+    override fun findAll(): List<Vote> =
+       voteRepository.findAll().mapNotNull { assembleVote(it) }
+
+    override fun findByIds(postId: Long, userId: Long): Vote?{
+        val voteData = voteRepository.findByIds(postId, userId) ?: return null
+        return assembleVote(voteData)
+    }
+
     private fun assembleVote(voteData: RawVoteData): Vote?{
         val user = userRepository.findById(voteData.userId) ?: return null
         val questionData = questionRepository.findById(voteData.postId)

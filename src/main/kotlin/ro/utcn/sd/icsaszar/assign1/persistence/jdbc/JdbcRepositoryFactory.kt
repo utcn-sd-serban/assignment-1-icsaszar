@@ -17,9 +17,9 @@ class JdbcRepositoryFactory(template: JdbcTemplate) : RepositoryFactory{
     private val lazyTagRepository: JdbcTagRepository = JdbcTagRepository(template)
     private val lazyVoteRepository: JdbcVoteRepository = JdbcVoteRepository(template)
 
-    override val answerRepository: AnswerRepository = JdbcEagerFetchAnswerRepository(lazyUserRepository, lazyAnswerRepository, lazyQuestionRepository)
-    override val questionRepository: QuestionRepository = JdbcEagerFetchQuestionRepository(lazyQuestionRepository, lazyUserRepository, lazyAnswerRepository, lazyTagRepository)
-    override val userRepository: UserRepository = JdbcEagerFetchUserRepository(lazyUserRepository, lazyAnswerRepository, lazyQuestionRepository)
+    override val answerRepository: AnswerRepository = JdbcEagerFetchAnswerRepository(lazyVoteRepository, lazyUserRepository, lazyAnswerRepository, lazyQuestionRepository)
+    override val questionRepository: QuestionRepository = JdbcEagerFetchQuestionRepository(lazyVoteRepository, lazyQuestionRepository, lazyUserRepository, lazyAnswerRepository, lazyTagRepository)
+    override val userRepository: UserRepository = JdbcEagerFetchUserRepository(lazyVoteRepository, lazyUserRepository, lazyAnswerRepository, lazyQuestionRepository)
     override val tagRepository: TagRepository = JdbcEagerFetchTagRepository(lazyTagRepository, lazyQuestionRepository)
     override val voteRepository: VoteRepository = JdbcEagerFetchVoteRepository(lazyVoteRepository, lazyAnswerRepository, lazyQuestionRepository, lazyUserRepository)
 }

@@ -31,7 +31,7 @@ class JdbcVoteRepository(private val template: JdbcTemplate){
     }
 
     fun save(entity: Vote): Vote {
-        return if(fingById(entity.user.id!!, entity.post.id!!) == null){
+        return if(findById(entity.user.id!!, entity.post.id!!) == null){
             insert(entity)
             entity
         }
@@ -51,8 +51,8 @@ class JdbcVoteRepository(private val template: JdbcTemplate){
         return template.query(sql, VoteMapper(), id)
     }
 
-    fun fingById(userId: Long, postId: Long):RawVoteData?{
-        val sql = "delete from votes where post_id = ? and user_id = ?"
+    fun findById(userId: Long, postId: Long):RawVoteData?{
+        val sql = "select * from votes where post_id = ? and user_id = ?"
         return template.query(sql, VoteMapper(), postId, userId).firstOrNull()
     }
 
@@ -62,8 +62,18 @@ class JdbcVoteRepository(private val template: JdbcTemplate){
     }
 
     fun getScoreForPost(postId: Long): Int{
-        val sql = "select sum(vote) from votes where post_id = ?"
+        val sql = "select coalesce(sum(vote),0) from votes where post_id = ?"
         return template.queryForObject(sql, Int::class.java, postId)
+    }
+
+    fun findAll(): List<RawVoteData>{
+        val sql = "select * from votes"
+        return template.query(sql, VoteMapper())
+    }
+
+    fun findByIds(postId: Long, userId: Long): RawVoteData?{
+        val sql = "select * from votes where user_id = ? and post_id = ?"
+        return template.query(sql, VoteMapper(), userId, postId).firstOrNull()
     }
 }
 
@@ -71,7 +81,7 @@ class VoteMapper : RowMapper<RawVoteData>{
     override fun mapRow(rs: ResultSet, rowNum: Int): RawVoteData? {
         return RawVoteData(
                 postId = rs.getLong("post_id"),
-                userId = rs.getLong("usre_id"),
+                userId = rs.getLong("user_id"),
                 vote = rs.getShort("vote")
         )
     }

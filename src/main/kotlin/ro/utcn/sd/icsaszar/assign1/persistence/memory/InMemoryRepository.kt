@@ -4,11 +4,13 @@ import ro.utcn.sd.icsaszar.assign1.model.GenericEntity
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
+import ro.utcn.sd.icsaszar.assign1.model.post.Post
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentMap
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicLong
 
 class InMemoryRepository {
@@ -16,7 +18,7 @@ class InMemoryRepository {
     private val answerData: ConcurrentMap<Long, Answer> = ConcurrentHashMap()
     private val userData: ConcurrentMap<Long, User> = ConcurrentHashMap()
     private val tagData: ConcurrentMap<Long, Tag> = ConcurrentHashMap()
-    private val voteData: ConcurrentLinkedQueue<Vote> = ConcurrentLinkedQueue()
+    private val voteData: CopyOnWriteArrayList<Vote> = CopyOnWriteArrayList()
     private val currentQuestionId: AtomicLong = AtomicLong(0)
     private val currentUserId: AtomicLong = AtomicLong(0)
     private val currentAnswerId: AtomicLong = AtomicLong(0)
@@ -111,12 +113,15 @@ class InMemoryRepository {
         findAllVotes(tagData)
 
     fun saveVote(vote: Vote): Vote{
-        voteData += vote
+        voteData.add(vote)
+        questionData[vote.post.id!!]?.addVote(vote)
+        answerData[vote.post.id!!]?.addVote(vote)
+        userData[vote.user.id!!]?.addVote(vote)
         return vote
     }
 
     fun deleteVote(vote: Vote){
-        voteData -= vote
+        voteData.remove(vote)
     }
 
     fun findAllVotes(): List<Vote> =
@@ -129,5 +134,8 @@ class InMemoryRepository {
         voteData.filter { it.post.id!! == postId }
 
     fun getScoreForPost(postId: Long): Int =
-        voteData.sumBy { it.vote.toInt() }
+        voteData.filter {it.post.id!! == postId} .sumBy { it.vote.toInt() }
+
+    fun findVoteByIds(userId: Long, postId: Long): Vote? =
+            voteData.find { (it.user.id!! == userId) and (it.post.id!! == postId) }
 }

@@ -93,4 +93,10 @@ class VoteInMemoryRepository(private val mainRepository: InMemoryRepository): Vo
 
     override fun getScoreForPost(postId: Long): Int =
         mainRepository.getScoreForPost(postId)
+
+    override fun findAll(): List<Vote> =
+        mainRepository.findAllVotes()
+
+    override fun findByIds(postId: Long, userId: Long): Vote? =
+        mainRepository.findVoteByIds(userId, postId)
 }

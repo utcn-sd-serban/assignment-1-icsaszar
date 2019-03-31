@@ -4,17 +4,15 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Controller
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
-import ro.utcn.sd.icsaszar.assign1.service.AnswerService
-import ro.utcn.sd.icsaszar.assign1.service.QuestionService
-import ro.utcn.sd.icsaszar.assign1.service.TagService
-import ro.utcn.sd.icsaszar.assign1.service.UserService
+import ro.utcn.sd.icsaszar.assign1.service.*
 
 @Controller
 class CommandLineController(
        private val userService: UserService,
        private val questionService: QuestionService,
        private val answerService: AnswerService,
-       private val tagService: TagService
+       private val tagService: TagService,
+       private val voteService: VoteService
 ) : CommandLineRunner{
     private var currentUser: User? = null
 
@@ -282,6 +280,7 @@ class CommandLineController(
     private fun handleList() {
         questionService.listAllQuestionsByPosted().forEach {q ->
             println(q.display())
+            println("Score: ${voteService.getPostScore(q)}")
             println("".padEnd(100, '-'))
         }
     }

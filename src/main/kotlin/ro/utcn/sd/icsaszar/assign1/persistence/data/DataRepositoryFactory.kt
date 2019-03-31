@@ -10,10 +10,12 @@ class DataRepositoryFactory(
     questionDataRepository: QuestionDataRepository,
     answerDataRepository: AnswerDataRepository,
     userDataRepository: UserDataRepository,
-    tagDataRepository: TagDataRepository
+    tagDataRepository: TagDataRepository,
+    voteDataRepository: VoteDataRepository
 ) : RepositoryFactory{
     override val questionRepository: QuestionRepository = questionDataRepository
     override val answerRepository: AnswerRepository = answerDataRepository
     override val userRepository: UserRepository = userDataRepository
     override val tagRepository: TagRepository = tagDataRepository
+    override val voteRepository: VoteRepository = voteDataRepository
 }

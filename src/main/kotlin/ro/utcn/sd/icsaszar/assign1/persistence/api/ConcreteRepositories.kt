@@ -34,4 +34,6 @@ interface VoteRepository {
     fun findAllByPost_Id(postId: Long): List<Vote>
     fun findAllByUser_Id(userId: Long): List<Vote>
     fun getScoreForPost(postId: Long): Int
+    fun findAll(): List<Vote>
+    fun findByIds(postId: Long, userId: Long): Vote?
 }
