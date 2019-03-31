@@ -6,6 +6,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ro.utcn.sd.icsaszar.assign1.model.User
+import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
@@ -63,6 +64,19 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         answerRepository.apply {
             if(findAll().isEmpty()){
                 answers.forEach {
+                    save(it)
+                }
+            }
+        }
+
+        println("Seeding votes")
+        val voteRepository = factory.voteRepository
+        val votes = mutableListOf<Vote>()
+        votes += Vote(questions[0], users[0], 1)
+        votes += Vote(questions[2], users[1], 1)
+        voteRepository.apply {
+            if(findAll().isEmpty()){
+                votes.forEach {
                     save(it)
                 }
             }

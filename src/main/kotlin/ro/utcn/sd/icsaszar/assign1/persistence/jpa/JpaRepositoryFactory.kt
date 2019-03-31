@@ -12,4 +12,5 @@ class JpaRepositoryFactory(entityManager: EntityManager): RepositoryFactory{
     override val answerRepository: AnswerRepository = AnswerJpaRepository(entityManager)
     override val userRepository: UserRepository = UserJpaRepository(entityManager)
     override val tagRepository: TagRepository = TagJpaRepository(entityManager)
+    override val voteRepository: VoteRepository = VoteJpaRepository(entityManager)
 }
