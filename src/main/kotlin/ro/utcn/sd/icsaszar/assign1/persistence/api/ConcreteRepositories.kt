@@ -17,6 +17,7 @@ interface QuestionRepository : GenericRepository<Question> {
 interface AnswerRepository : GenericRepository<Answer>{
     fun findAllByAnswerTo_Id(questionId: Long): List<Answer>
     fun findAllByAuthor_Id(id: Long): List<Answer>
+    fun findAllByPostIdOrderByScoreDesc(postId: Long): List<Answer>
 }
 
 interface UserRepository : GenericRepository<User>{

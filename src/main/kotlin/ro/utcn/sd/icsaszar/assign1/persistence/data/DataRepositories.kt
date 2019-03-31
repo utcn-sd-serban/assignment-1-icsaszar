@@ -16,7 +16,25 @@ interface QuestionDataRepository : CrudRepository<Question, Long>, QuestionRepos
 
 }
 interface AnswerDataRepository : CrudRepository<Answer, Long>, AnswerRepository {
-
+    @Query(
+            """select
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            answer.question_id as question_id
+        from
+            post inner join answer
+                            on post.id = answer.id
+                 left join votes
+                            on post.id = votes.post_id
+        where
+                answer.question_id  = ?
+        group by
+            post.id, answer.question_id
+        order by
+            coalesce(sum(votes.vote),0) desc""", nativeQuery = true)
+    override fun findAllByPostIdOrderByScoreDesc(postId: Long): List<Answer>
 }
 
 interface TagDataRepository : CrudRepository<Tag, Long>, TagRepository {

@@ -41,6 +41,11 @@ class JdbcEagerFetchAnswerRepository(
         return answers.mapNotNull { assembleAnswer(it) }
     }
 
+    override fun findAllByPostIdOrderByScoreDesc(postId: Long): List<Answer> {
+        val answers = answerRepository.findAllByPostIdOrderByScoreDesc(postId)
+        return answers.mapNotNull { assembleAnswer(it) }
+    }
+
     private fun assembleAnswer(answerData: RawAnswerData): Answer?{
         val user = userRepository.findById(answerData.authorId) ?: return null
         val questionData = questionRepository.findById(answerData.questionId) ?: return null

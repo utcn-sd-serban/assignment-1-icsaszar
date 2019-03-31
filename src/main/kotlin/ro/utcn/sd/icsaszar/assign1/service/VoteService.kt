@@ -11,9 +11,12 @@ import javax.transaction.Transactional
 class VoteService(private val repositoryFactory: RepositoryFactory){
     @Transactional
     fun upVote(post: Post, user: User): Boolean{
+        if(post.author.id!! == user.id!!) return false
         with(repositoryFactory.voteRepository){
-            if(findByIds(post.id!!, user.id!!) != null)
-                return false
+            val oldVote = findByIds(post.id!!, user.id!!)
+            if(oldVote != null)
+                if (oldVote.vote.toInt() == 1)
+                    return false
             save(Vote(post, user, 1))
             return true
         }
@@ -21,9 +24,12 @@ class VoteService(private val repositoryFactory: RepositoryFactory){
 
     @Transactional
     fun downVote(post: Post, user: User): Boolean{
+        if(post.author.id!! == user.id!!) return false
         with(repositoryFactory.voteRepository){
-            if(findByIds(post.id!!, user.id!!) != null)
-                return false
+            val oldVote = findByIds(post.id!!, user.id!!)
+            if(oldVote != null)
+                if (oldVote.vote.toInt() == -1)
+                    return false
             save(Vote(post, user, -1))
             return true
         }

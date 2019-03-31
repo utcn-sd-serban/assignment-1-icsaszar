@@ -18,6 +18,10 @@ class AnswerService(private val repositoryFactory: RepositoryFactory){
     }
 
     @Transactional
+    fun findAllByPostIdOrderByScoreDesc(postId: Long): List<Answer> =
+        repositoryFactory.answerRepository.findAllByPostIdOrderByScoreDesc(postId)
+
+    @Transactional
     fun findAllByAuthorId(id: Long): List<Answer> =
         repositoryFactory.answerRepository.findAllByAuthor_Id(id)
 

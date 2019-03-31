@@ -1,5 +1,6 @@
 package ro.utcn.sd.icsaszar.assign1.model.post
 
+import org.hibernate.annotations.Formula
 import ro.utcn.sd.icsaszar.assign1.model.GenericEntity
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.Vote
@@ -7,6 +8,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
+import kotlin.jvm.Transient
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

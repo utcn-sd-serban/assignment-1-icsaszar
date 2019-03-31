@@ -38,6 +38,9 @@ class AnswerInMemoryRepository(private val mainRepository: InMemoryRepository) :
     override fun findAllByAnswerTo_Id(questionId: Long): List<Answer> =
         mainRepository.findAllAnswers().filter { it.answerTo!!.id == questionId }
 
+    override fun findAllByPostIdOrderByScoreDesc(postId: Long): List<Answer> =
+        findAllByAnswerTo_Id(postId).sortedByDescending { a -> a.votes.sumBy { v -> v.vote.toInt() }}
+
     override fun save(entity: Answer): Answer = mainRepository.saveAnswer(entity)
 
     override fun delete(entity: Answer) = mainRepository.deleteAnswer(entity)

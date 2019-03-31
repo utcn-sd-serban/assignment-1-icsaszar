@@ -1,5 +1,6 @@
 package ro.utcn.sd.icsaszar.assign1.persistence.jpa
 
+import org.springframework.data.jpa.repository.Query
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
@@ -46,6 +47,31 @@ class AnswerJpaRepository(entityManager: EntityManager):
             entityManager.createQuery("select a from Answer a where a.author.id = ?1", entityClass)
                     .setParameter(1, id)
                     .resultList
+
+    override fun findAllByPostIdOrderByScoreDesc(postId: Long): List<Answer> {
+        val sql = """
+        select
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            answer.question_id as question_id
+        from
+            post inner join answer
+                            on post.id = answer.id
+                 left join votes
+                            on post.id = votes.post_id
+        where
+                answer.question_id  = ?
+        group by
+            post.id, answer.question_id
+        order by
+            coalesce(sum(votes.vote),0) desc
+        """
+        return entityManager.createNativeQuery(sql, entityClass)
+                .setParameter(1, postId)
+                .resultList as List<Answer>
+    }
 }
 
 class UserJpaRepository(entityManager: EntityManager):
@@ -118,9 +144,10 @@ class VoteJpaRepository(private val entityManager: EntityManager): VoteRepositor
                 .resultList
 
     override fun getScoreForPost(postId: Long): Int =
-        entityManager.createQuery("select sum(v.vote) form Vote v where v.post.id = ?1", Int::class.java)
+            (entityManager.createQuery("select sum(v.vote) from Vote v where v.post.id = ?1")
                 .setParameter(1, postId)
-                .singleResult
+                .singleResult as Long?)?.toInt() ?: 0
+
 
     override fun findAll(): List<Vote> {
         val builder: CriteriaBuilder = entityManager.criteriaBuilder

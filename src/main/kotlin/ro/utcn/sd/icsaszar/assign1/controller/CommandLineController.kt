@@ -138,9 +138,14 @@ class CommandLineController(
         }
 
         println(question.display())
-        question.answers.forEach {
-            println(it.display())
-        }
+        answerService.findAllByPostIdOrderByScoreDesc(question.id!!)
+                .forEach {
+                    //I know it.display(voteService.getPostScore(it)) is horrible,
+                    //especially since the scores are already calculated to do the sorting
+                    //but getting it right with hibernate (using ResultSetMapping)
+                    //is something don't have enough time to attempt
+                    println(it.display(voteService.getPostScore(it)))
+                }
 
         println("[view] Type answer to submit an answer to this question")
         println("[view] Type done to exit")
@@ -279,8 +284,10 @@ class CommandLineController(
 
     private fun handleList() {
         questionService.listAllQuestionsByPosted().forEach {q ->
-            println(q.display())
-            println("Score: ${voteService.getPostScore(q)}")
+            //I know q.display(voteService.getPostScore(q)) is horrible,
+            //but getting it right with hibernate (using ResultSetMapping)
+            //is something don't have enough time to attempt
+            println(q.display(voteService.getPostScore(q)))
             println("".padEnd(100, '-'))
         }
     }
