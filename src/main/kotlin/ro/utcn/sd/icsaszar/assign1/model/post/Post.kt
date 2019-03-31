@@ -34,4 +34,8 @@ abstract class Post(
         author.posts.add(this)
         return this
     }
+
+    open fun addVote(vote: Vote){
+        votes.add(vote)
+    }
 }

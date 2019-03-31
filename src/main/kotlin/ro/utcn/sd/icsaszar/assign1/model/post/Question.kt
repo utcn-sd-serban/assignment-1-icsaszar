@@ -46,14 +46,14 @@ class Question(
     )
     var answers: MutableSet<Answer> = mutableSetOf()
 
-    constructor(data: RawQuestionData):this(
+    constructor(data: RawQuestionData): this(
             text = data.text,
             posted = data.posted,
             id = data.id,
             title = data.title
     )
 
-    fun addAnswer(answer: Answer):Question{
+    fun addAnswer(answer: Answer): Question{
         answer.answerTo = this
         answers.add(answer)
         return this
@@ -65,7 +65,7 @@ class Question(
         return this
     }
 
-    fun addTags(tags: Set<Tag>):Question{
+    fun addTags(tags: Set<Tag>): Question{
         tags.forEach {addTag(it)}
         return this
     }

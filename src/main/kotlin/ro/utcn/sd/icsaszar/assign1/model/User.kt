@@ -34,8 +34,13 @@ data class User(
         return this
     }
 
-    fun addPosts(posts: List<Post>):User{
+    fun addPosts(posts: List<Post>): User{
         posts.forEach { addPost(it) }
+        return this
+    }
+
+    fun addVote(vote: Vote): User{
+        votes.add(vote)
         return this
     }
 
@@ -49,6 +54,4 @@ data class User(
 
         return id?.equals(other.id) ?: false
     }
-
-
 }

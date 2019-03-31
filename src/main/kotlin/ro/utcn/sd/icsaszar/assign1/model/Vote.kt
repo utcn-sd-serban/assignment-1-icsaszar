@@ -6,6 +6,9 @@ import javax.persistence.*
 
 data class RawVoteData(var postId: Long, var userId: Long, var vote: Short)
 
+@Entity
+@Table(name = "votes")
+@IdClass(Vote.Companion.VoteId::class)
 data class Vote(
     @Id
     @ManyToOne(fetch = FetchType.EAGER)
@@ -18,7 +21,7 @@ data class Vote(
     var user: User,
 
     var vote: Short
-){
+): Serializable{
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vote) return false
@@ -35,5 +38,9 @@ data class Vote(
         result = 31 * result + user.hashCode()
         result = 31 * result + vote
         return result
+    }
+
+    companion object {
+        data class VoteId(var post: Post? = null, var user: User? = null): Serializable
     }
 }
