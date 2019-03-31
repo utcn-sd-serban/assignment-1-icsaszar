@@ -16,12 +16,15 @@ data class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override var id: Long? = null,
 
+    var isBanned: Boolean = false,
+
+    var isMod: Boolean = false,
+
     @OneToMany(mappedBy = "author", cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
     var posts: MutableSet<Post> = HashSet(),
 
-    var isBanned: Boolean = false,
-
-    var isMod: Boolean = false
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    var votes: MutableSet<Vote> = mutableSetOf()
 
 ) : GenericEntity {
 

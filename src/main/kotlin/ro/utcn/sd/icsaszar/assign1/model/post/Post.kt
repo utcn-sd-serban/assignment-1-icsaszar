@@ -2,6 +2,7 @@ package ro.utcn.sd.icsaszar.assign1.model.post
 
 import ro.utcn.sd.icsaszar.assign1.model.GenericEntity
 import ro.utcn.sd.icsaszar.assign1.model.User
+import ro.utcn.sd.icsaszar.assign1.model.Vote
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
@@ -22,7 +23,10 @@ abstract class Post(
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        override var id: Long? = null
+        override var id: Long? = null,
+
+        @OneToMany(mappedBy = "post")
+        open var votes: MutableSet<Vote> = mutableSetOf()
 ) : GenericEntity {
 
     open fun setAuthor(author: User): Post{
