@@ -113,10 +113,15 @@ class InMemoryRepository {
         findAllVotes(tagData)
 
     fun saveVote(vote: Vote): Vote{
-        voteData.add(vote)
-        questionData[vote.post.id!!]?.addVote(vote)
-        answerData[vote.post.id!!]?.addVote(vote)
-        userData[vote.user.id!!]?.addVote(vote)
+        if(vote !in voteData){
+            voteData.add(vote)
+            questionData[vote.post.id!!]?.addVote(vote)
+            answerData[vote.post.id!!]?.addVote(vote)
+            userData[vote.user.id!!]?.addVote(vote)
+        }else{
+            voteData.remove(vote)
+            voteData.add(vote)
+        }
         return vote
     }
 

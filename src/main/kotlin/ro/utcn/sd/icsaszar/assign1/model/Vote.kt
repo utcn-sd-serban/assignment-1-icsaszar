@@ -28,16 +28,12 @@ data class Vote(
 
         if (post != other.post) return false
         if (user != other.user) return false
-        if (vote != other.vote) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = post.hashCode()
-        result = 31 * result + user.hashCode()
-        result = 31 * result + vote
-        return result
+        return 31
     }
 }
 

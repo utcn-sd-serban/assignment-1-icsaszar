@@ -195,6 +195,8 @@ class CommandLineController(
                             println("[view] [vote] Can't vote on your own post!")
                         }
 
+                    }else{
+                        println("[view] [vote] Invalid post id!")
                     }
                 }
                 "refresh" -> {
