@@ -4,11 +4,9 @@ import ro.utcn.sd.icsaszar.assign1.model.GenericEntity
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
-import ro.utcn.sd.icsaszar.assign1.model.post.Post
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicLong
@@ -40,7 +38,7 @@ class InMemoryRepository {
     private fun <T : GenericEntity>findById(id: Long, data: MutableMap<Long,T>): T? =
         data[id]
 
-    private fun <T : GenericEntity>findAllVotes(data: MutableMap<Long,T>): List<T> =
+    private fun <T : GenericEntity>findAll(data: MutableMap<Long,T>): List<T> =
         data.values.toList()
 
 
@@ -64,7 +62,7 @@ class InMemoryRepository {
         findById(id, questionData)
 
     fun findAllQuestions(): List<Question> =
-        findAllVotes(questionData)
+        findAll(questionData)
 
 
     fun saveAnswer(answer: Answer): Answer {
@@ -98,7 +96,7 @@ class InMemoryRepository {
         findById(id, userData)
 
     fun findAllUsers(): List<User> =
-        findAllVotes(userData)
+        findAll(userData)
 
     fun saveTag(tag: Tag): Tag =
         save(tag, currentTagId, tagData)
@@ -110,7 +108,7 @@ class InMemoryRepository {
         findById(id, tagData)
 
     fun findAllTags(): List<Tag> =
-        findAllVotes(tagData)
+        findAll(tagData)
 
     fun saveVote(vote: Vote): Vote{
         if(vote !in voteData){
