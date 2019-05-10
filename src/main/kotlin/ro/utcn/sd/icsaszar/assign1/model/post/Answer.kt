@@ -25,7 +25,6 @@ class Answer(
 
         id: Long? = null
 
-
 ) : Post(author, text, posted, id){
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id", nullable = false)
@@ -47,7 +46,7 @@ class Answer(
         return this
     }
 
-    fun display(): String{
+    fun display(score: Int? = null): String{
         val formatter =
                 DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
         val sb: StringBuilder = StringBuilder()
@@ -55,6 +54,8 @@ class Answer(
             .append(" ".repeat(5)).append(postText).append("\n")
             .append(" ".repeat(5)).append(author.userName.padEnd(30))
             .append(posted.format(formatter)).append("\n")
+        if(score != null)
+            sb.append(" ".repeat(5)).append("Score: $score").append("\n")
         return sb.toString()
     }
 

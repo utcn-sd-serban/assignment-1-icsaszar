@@ -104,9 +104,32 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
         """
         return template.query(sql, RawAnswerMapper(), id)
     }
+
+    fun findAllByPostIdOrderByScoreDesc(postId: Long): List<RawAnswerData>{
+        val sql = """
+        select
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            answer.question_id as question_id
+        from
+            post inner join answer
+                            on post.id = answer.id
+                 left join votes
+                            on post.id = votes.post_id
+        where
+                answer.question_id  = ?
+        group by
+            post.id, answer.question_id
+        order by
+            coalesce(sum(votes.vote),0) desc
+        """
+        return template.query(sql, RawAnswerMapper(), postId)
+    }
 }
 
-class RawAnswerMapper : RowMapper<RawAnswerData>{
+class RawAnswerMapper : RowMapper<RawAnswerData> {
     override fun mapRow(rs: ResultSet, rowNum: Int): RawAnswerData? {
         return RawAnswerData(
                 authorId = rs.getLong("author_id"),

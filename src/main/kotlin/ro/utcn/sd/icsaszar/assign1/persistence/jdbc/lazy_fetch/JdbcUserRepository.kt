@@ -18,12 +18,14 @@ class JdbcUserRepository(private val template: JdbcTemplate){
     }
 
     private fun insert(entity: User): Long{
-        val sql: String = "insert into users (user_name) values (?)"
+        val sql: String = "insert into users (user_name, is_mod, is_banned) values (?,?,?)"
         val keyHolder: KeyHolder = GeneratedKeyHolder()
         template.update ( { conn ->
             val ps: PreparedStatement =
                     conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
             ps.setString(1, entity.userName)
+            ps.setBoolean(2, entity.isMod)
+            ps.setBoolean(3, entity.isBanned)
             ps
 
         },
@@ -66,7 +68,9 @@ class UserMapper : RowMapper<User> {
     override fun mapRow(rs: ResultSet, rowNum: Int): User? {
         return User(
                 rs.getString("user_name"),
-                rs.getLong("id")
+                rs.getLong("id"),
+                isMod =  rs.getBoolean("is_mod"),
+                isBanned = rs.getBoolean("is_banned")
                 )
     }
 }

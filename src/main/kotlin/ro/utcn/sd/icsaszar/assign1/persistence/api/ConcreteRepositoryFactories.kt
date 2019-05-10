@@ -10,4 +10,5 @@ interface RepositoryFactory {
     val answerRepository: AnswerRepository
     val userRepository: UserRepository
     val tagRepository: TagRepository
+    val voteRepository: VoteRepository
 }

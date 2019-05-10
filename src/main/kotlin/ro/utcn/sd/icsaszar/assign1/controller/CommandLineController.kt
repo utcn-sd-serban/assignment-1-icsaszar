@@ -3,18 +3,17 @@ package ro.utcn.sd.icsaszar.assign1.controller
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Controller
 import ro.utcn.sd.icsaszar.assign1.model.User
+import ro.utcn.sd.icsaszar.assign1.model.post.Post
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
-import ro.utcn.sd.icsaszar.assign1.service.AnswerService
-import ro.utcn.sd.icsaszar.assign1.service.QuestionService
-import ro.utcn.sd.icsaszar.assign1.service.TagService
-import ro.utcn.sd.icsaszar.assign1.service.UserService
+import ro.utcn.sd.icsaszar.assign1.service.*
 
 @Controller
 class CommandLineController(
        private val userService: UserService,
        private val questionService: QuestionService,
        private val answerService: AnswerService,
-       private val tagService: TagService
+       private val tagService: TagService,
+       private val voteService: VoteService
 ) : CommandLineRunner{
     private var currentUser: User? = null
 
@@ -133,33 +132,83 @@ class CommandLineController(
         println("[view] Type the id of a question to view it")
         print("[view] Id: ")
         var cmd = readLine()!!
-        val question = questionService.findById(cmd.toLong())
+        val questionId = cmd.toLong()
+        var question = questionService.findById(questionId)
         if(question == null){
             println("[view] No such question")
             return
         }
+        val posts = mutableListOf<Post>(question)
 
         println(question.display())
-        question.answers.forEach {
-            println(it.display())
-        }
+        answerService.findAllByPostIdOrderByScoreDesc(question.id!!)
+                .forEach {
+                    //I know it.display(voteService.getPostScore(it)) is horrible,
+                    //especially since the scores are already calculated to do the sorting
+                    //but getting it right with hibernate (using ResultSetMapping or @Formula fields)
+                    //is something don't have enough time to attempt
+                    println(it.display(voteService.getPostScore(it)))
+                    posts.add(it)
+                }
 
         println("[view] Type answer to submit an answer to this question")
+        println("[view] Type vote to vote on a displayed post")
         println("[view] Type done to exit")
 
         cmd = readLine()!!
 
         while(cmd != "done"){
-            if(cmd == "answer"){
-                print("[answer] Type answer text:")
-                cmd = readLine()!!
-                answerService.submitAnswer(cmd, currentUser!!, question)
-                println("[answer] Answer submitted")
-            } else{
-              println("[answer] Invalid command")
+            when (cmd){
+                "answer" ->{
+                    print("[view] [answer] Type answer text:")
+                    cmd = readLine()!!
+                    answerService.submitAnswer(cmd, currentUser!!, question)
+                    println("[view] [answer] Answer submitted")
+                }
+                "vote" ->{
+                    println("[view] [vote] Type the id you want to vote up or down")
+                    print("[view] [vote] Id:")
+                    cmd = readLine()!!
+                    val id = cmd.toLong()
+                    val targetPost = posts.find { it.id!! == id }
+                    if(targetPost != null){
+                        if(targetPost.author.id!! != currentUser!!.id!!){
+                            println("[view] [vote] Type up or down to upvote or downvote")
+                            print("[view] [vote] Direction:")
+                            cmd = readLine()!!
+                            when(cmd){
+                                "up" -> {
+                                    if(voteService.upVote(targetPost,currentUser!!))
+                                        println("[view] [vote] Vote recorded")
+                                    else
+                                        println("[view] [vote] You already upvoted this post")
+                                }
+                                "down" -> {
+                                    if(voteService.downVote(targetPost, currentUser!!))
+                                        println("[view] [vote] Vote recorded")
+                                    else
+                                        println("[view] [vote] You already downvoted this post")
+                                }
+                                else -> println("[view] [vote] Invalid command")
+                            }
+                        }else{
+                            println("[view] [vote] Can't vote on your own post!")
+                        }
+
+                    }else{
+                        println("[view] [vote] Invalid post id!")
+                    }
+                }
+                "refresh" -> {
+
+                }
+                else ->{
+                    println("[view] [answer] Invalid command")
+                }
             }
 
             println("[view] Type answer to submit an answer to this question")
+            println("[view] Type vote to vote on a displayed post")
             println("[view] Type done to exit")
 
             cmd = readLine()!!
@@ -281,7 +330,10 @@ class CommandLineController(
 
     private fun handleList() {
         questionService.listAllQuestionsByPosted().forEach {q ->
-            println(q.display())
+            //I know q.display(voteService.getPostScore(q)) is horrible,
+            //but getting it right with hibernate (using ResultSetMapping)
+            //is something don't have enough time to attempt
+            println(q.display(voteService.getPostScore(q)))
             println("".padEnd(100, '-'))
         }
     }

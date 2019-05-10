@@ -6,6 +6,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ro.utcn.sd.icsaszar.assign1.model.User
+import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
@@ -23,11 +24,11 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
     override fun run(vararg args: String) {
         println("Seeding users")
         //http://www.optipess.com/2018/10/15/titsmcgee4782/
-        val users = listOf(User("TitsMcGee4782"), User("User2"), User("User3"))
+        val users = mutableListOf(User("TitsMcGee4782"), User("User2"), User("User3"))
         val userRepository = factory.userRepository
         userRepository.apply {
             if (findAll().isEmpty()) {
-                users.forEach { save(it) }
+                users.replaceAll { save(it) }
             }
         }
         println("Seeding tags")
@@ -48,7 +49,7 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         questions += Question(users[2], "My hands hurt from so much typing",title = "Why is java so verbose?").addTag(tags[0])
         questionRepository.apply {
             if(findAll().isEmpty()) {
-                questions.forEach {save(it)}
+                questions.replaceAll {save(it)}
             }
         }
 
@@ -62,7 +63,27 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
         answers += Answer(users[0], "Never mind i figured it out").setQuestion(questions[0])
         answerRepository.apply {
             if(findAll().isEmpty()){
-                answers.forEach {
+                answers.replaceAll { save(it) }
+            }
+        }
+
+        println("Seeding votes")
+        val voteRepository = factory.voteRepository
+        val votes = mutableListOf<Vote>()
+        votes += Vote(questions[0], users[0], 1)
+        votes += Vote(questions[0], users[1], -1)
+        votes += Vote(questions[0], users[2], -1)
+        votes += Vote(questions[2], users[1], 1)
+
+        votes += Vote(answers[4], users[1], -1)
+        votes += Vote(answers[4], users[2], -1)
+        votes += Vote(answers[0], users[1], 1)
+        votes += Vote(answers[1], users[2], 1)
+        votes += Vote(answers[1], users[0], 1)
+        votes += Vote(answers[3], users[2], 1)
+        voteRepository.apply {
+            if(findAll().isEmpty()){
+                votes.forEach {
                     save(it)
                 }
             }

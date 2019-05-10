@@ -25,8 +25,6 @@ class Question(
 
         @Length(min = 3)
         var title: String = ""
-
-
         ) : Post(author, text, posted, id){
 
     init {
@@ -47,14 +45,14 @@ class Question(
     )
     var answers: MutableSet<Answer> = mutableSetOf()
 
-    constructor(data: RawQuestionData):this(
+    constructor(data: RawQuestionData): this(
             text = data.text,
             posted = data.posted,
             id = data.id,
             title = data.title
     )
 
-    fun addAnswer(answer: Answer):Question{
+    fun addAnswer(answer: Answer): Question{
         answer.answerTo = this
         answers.add(answer)
         return this
@@ -66,7 +64,7 @@ class Question(
         return this
     }
 
-    fun addTags(tags: Set<Tag>):Question{
+    fun addTags(tags: Set<Tag>): Question{
         tags.forEach {addTag(it)}
         return this
     }
@@ -78,7 +76,7 @@ class Question(
         } else false
     }
 
-    fun display(): String {
+    fun display(score: Int? = null): String {
         val formatter =
                 DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
         val sb: StringBuilder = StringBuilder()
@@ -87,6 +85,8 @@ class Question(
             .append(postText).append("\n")
             .append(author.userName.padEnd(30))
             .append(posted.format(formatter)).append("\n")
+        if(score != null)
+            sb.append("Score: $score").append("\n")
         return sb.toString()
     }
 

@@ -1,16 +1,15 @@
 package ro.utcn.sd.icsaszar.assign1.persistence.jdbc
 
+import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.RawQuestionData
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 import ro.utcn.sd.icsaszar.assign1.persistence.api.QuestionRepository
-import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcAnswerRepository
-import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcQuestionRepository
-import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcTagRepository
-import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcUserRepository
+import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.*
 
 class JdbcEagerFetchQuestionRepository(
+        private val voteRepository: JdbcVoteRepository,
         private val questionRepository: JdbcQuestionRepository,
         private val userRepository: JdbcUserRepository,
         private val answerRepository: JdbcAnswerRepository,
@@ -55,17 +54,17 @@ class JdbcEagerFetchQuestionRepository(
     }
 
     private fun assembleQuestion(questionData: RawQuestionData): Question?{
-        val user = userRepository.findById(questionData.authorId)
-        return if (user != null){
-            val question = Question(questionData)
-            answerRepository.findAllByAnswerTo_Id(questionData.id)
-                    .map { Answer(it) }
-                    .forEach {question.addAnswer(it)}
-            question.setAuthor(user)
-            val tags = tagRepository.findAllByQuestions_Id(questionData.id).toMutableSet()
-            question.addTags(tags)
-            question
-        } else
-            null
+        val user = userRepository.findById(questionData.authorId) ?: return null
+        val question = Question(questionData)
+        answerRepository.findAllByAnswerTo_Id(questionData.id)
+                .map { Answer(it) }
+                .forEach {question.addAnswer(it)}
+        question.setAuthor(user)
+        val tags = tagRepository.findAllByQuestions_Id(questionData.id).toMutableSet()
+        question.addTags(tags)
+        voteRepository.findAllByPost_Id(questionData.id)
+                .map { Vote(question, user, it.vote) }
+                .forEach { question.addVote(it) }
+        return question
     }
 }

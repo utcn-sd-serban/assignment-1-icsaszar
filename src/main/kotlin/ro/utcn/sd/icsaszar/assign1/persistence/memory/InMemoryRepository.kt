@@ -2,11 +2,13 @@ package ro.utcn.sd.icsaszar.assign1.persistence.memory
 
 import ro.utcn.sd.icsaszar.assign1.model.GenericEntity
 import ro.utcn.sd.icsaszar.assign1.model.User
+import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicLong
 
 class InMemoryRepository {
@@ -14,6 +16,7 @@ class InMemoryRepository {
     private val answerData: ConcurrentMap<Long, Answer> = ConcurrentHashMap()
     private val userData: ConcurrentMap<Long, User> = ConcurrentHashMap()
     private val tagData: ConcurrentMap<Long, Tag> = ConcurrentHashMap()
+    private val voteData: CopyOnWriteArrayList<Vote> = CopyOnWriteArrayList()
     private val currentQuestionId: AtomicLong = AtomicLong(0)
     private val currentUserId: AtomicLong = AtomicLong(0)
     private val currentAnswerId: AtomicLong = AtomicLong(0)
@@ -106,4 +109,36 @@ class InMemoryRepository {
 
     fun findAllTags(): List<Tag> =
         findAll(tagData)
+
+    fun saveVote(vote: Vote): Vote{
+        if(vote !in voteData){
+            voteData.add(vote)
+            questionData[vote.post.id!!]?.addVote(vote)
+            answerData[vote.post.id!!]?.addVote(vote)
+            userData[vote.user.id!!]?.addVote(vote)
+        }else{
+            voteData.remove(vote)
+            voteData.add(vote)
+        }
+        return vote
+    }
+
+    fun deleteVote(vote: Vote){
+        voteData.remove(vote)
+    }
+
+    fun findAllVotes(): List<Vote> =
+        voteData.toList()
+
+    fun findVotesByUserId(userId: Long): List<Vote> =
+        voteData.filter { it.user.id!! == userId }
+
+    fun findVotesByPostId(postId: Long): List<Vote> =
+        voteData.filter { it.post.id!! == postId }
+
+    fun getScoreForPost(postId: Long): Int =
+        voteData.filter {it.post.id!! == postId} .sumBy { it.vote.toInt() }
+
+    fun findVoteByIds(userId: Long, postId: Long): Vote? =
+            voteData.find { (it.user.id!! == userId) and (it.post.id!! == postId) }
 }

@@ -16,8 +16,15 @@ data class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override var id: Long? = null,
 
+    var isBanned: Boolean = false,
+
+    var isMod: Boolean = false,
+
     @OneToMany(mappedBy = "author", cascade = [(CascadeType.ALL)], fetch = FetchType.EAGER)
-    var posts: MutableSet<Post> = HashSet()
+    var posts: MutableSet<Post> = HashSet(),
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    var votes: MutableSet<Vote> = mutableSetOf()
 
 ) : GenericEntity {
 
@@ -27,8 +34,13 @@ data class User(
         return this
     }
 
-    fun addPosts(posts: List<Post>):User{
+    fun addPosts(posts: List<Post>): User{
         posts.forEach { addPost(it) }
+        return this
+    }
+
+    fun addVote(vote: Vote): User{
+        votes.add(vote)
         return this
     }
 
@@ -42,6 +54,4 @@ data class User(
 
         return id?.equals(other.id) ?: false
     }
-
-
 }

@@ -1,5 +1,6 @@
 package ro.utcn.sd.icsaszar.assign1.persistence.jdbc
 
+import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.RawAnswerData
@@ -7,8 +8,10 @@ import ro.utcn.sd.icsaszar.assign1.persistence.api.AnswerRepository
 import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcAnswerRepository
 import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcQuestionRepository
 import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcUserRepository
+import ro.utcn.sd.icsaszar.assign1.persistence.jdbc.lazy_fetch.JdbcVoteRepository
 
 class JdbcEagerFetchAnswerRepository(
+        private val voteRepository: JdbcVoteRepository,
         private val userRepository: JdbcUserRepository,
         private val answerRepository: JdbcAnswerRepository,
         private val questionRepository: JdbcQuestionRepository) : AnswerRepository{
@@ -38,19 +41,20 @@ class JdbcEagerFetchAnswerRepository(
         return answers.mapNotNull { assembleAnswer(it) }
     }
 
+    override fun findAllByPostIdOrderByScoreDesc(postId: Long): List<Answer> {
+        val answers = answerRepository.findAllByPostIdOrderByScoreDesc(postId)
+        return answers.mapNotNull { assembleAnswer(it) }
+    }
+
     private fun assembleAnswer(answerData: RawAnswerData): Answer?{
-        val user = userRepository.findById(answerData.authorId)
-        val questionData = questionRepository.findById(answerData.questionId)
-        return if(user != null)
-            if(questionData != null){
-                val question: Question = Question(questionData)
-                val answer = Answer(answerData)
-                answer.setQuestion(question)
-                answer.setAuthor(user)
-                answer
-            }
-            else null
-        else
-            null
+        val user = userRepository.findById(answerData.authorId) ?: return null
+        val questionData = questionRepository.findById(answerData.questionId) ?: return null
+        val voteData = voteRepository.findAllByPost_Id(answerData.id)
+        val question: Question = Question(questionData)
+        val answer = Answer(answerData)
+        voteData.forEach { answer.addVote(Vote(answer, user, it.vote)) }
+        answer.setQuestion(question)
+        answer.setAuthor(user)
+        return answer
     }
 }
