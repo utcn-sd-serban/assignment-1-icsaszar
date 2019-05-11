@@ -17,16 +17,22 @@ class JdbcQuestionRepository (
     fun findAllByAuthor_Id(id: Long): List<RawQuestionData> {
         val sql = """
         select
-          post.id as id,
-          post.post_text as post_text,
-          post.posted as posted,
-          post.author_id as author_id,
-          question.title as title
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            question.title as title,
+            coalesce(sum(votes.vote),0) as score
         from
-          post
-            inner join question on post.id = question.id
+            post
+                inner join question
+                    on post.id = question.id
+                left join votes
+                    on post.id = votes.post_id
         where
-          post.author_id = ?
+            post.author_id = ?
+        group by
+            post.id, question.title
         """
         return template.query(sql, RawQuestionMapper(), id)
     }
@@ -34,17 +40,24 @@ class JdbcQuestionRepository (
     fun findAllByTags(tag: Tag): List<RawQuestionData> {
         val sql = """
         select
-          post.id as id,
-          post.post_text as post_text,
-          post.posted as posted,
-          post.author_id as author_id,
-          question.title as title
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            question.title as title,
+            coalesce(sum(votes.vote),0) as score
         from
-          post
-            inner join question on post.id = question.id
-            inner join question_tag on question.id = question_tag.question_id
+            post
+                inner join question
+                    on post.id = question.id
+                inner join question_tag
+                    on question.id = question_tag.question_id
+                left join votes
+                    on post.id = votes.post_id
         where
-          question_tag.tag_id = ?
+            question_tag.tag_id = ?
+        group by
+            post.id, question.title
         """
         return template.query(sql, RawQuestionMapper(), tag.id!!)
     }
@@ -52,16 +65,21 @@ class JdbcQuestionRepository (
     fun findAllByTitleContainsIgnoreCase(text: String): List<RawQuestionData> {
         val sql = """
         select
-          post.id as id,
-          post.post_text as post_text,
-          post.posted as posted,
-          post.author_id as author_id,
-          question.title as title
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            question.title as title,
+            coalesce(sum(votes.vote),0) as score
         from
-          post
-            inner join question on post.id = question.id
+            post inner join question
+                on post.id = question.id
+            left join votes
+                on post.id = votes.post_id
         where
-          lower(question.title) like ?
+            lower(question.title) like ?
+        group by
+            post.id, question.title
         """
         val param = "%${text.toLowerCase()}%"
         return template.query(sql, RawQuestionMapper(), param)
@@ -70,15 +88,21 @@ class JdbcQuestionRepository (
     fun findAllByOrderByPostedDesc(): List<RawQuestionData> {
         val sql = """
         select
-          post.id as id,
-          post.post_text as post_text,
-          post.posted as posted,
-          post.author_id as author_id,
-          question.title as title
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            question.title as title,
+            coalesce(sum(votes.vote),0) as score
         from
-          post
-            inner join question on post.id = question.id
-        order by post.posted desc
+            post inner join question
+                on post.id = question.id
+            left join votes
+                on post.id = votes.post_id
+        group by
+            post.id, question.title
+        order by
+            post.posted desc
         """
         return template.query(sql, RawQuestionMapper())
     }
@@ -133,16 +157,21 @@ class JdbcQuestionRepository (
     fun findById(id: Long): RawQuestionData? {
         val sql = """
         select
-           post.id as id,
-           post.post_text as post_text,
-           post.posted as posted,
-           post.author_id as author_id,
-           question.title as title
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            question.title as title,
+            coalesce(sum(votes.vote),0) as score
         from
-           post inner join question
-           on post.id = question.id
+            post inner join question
+                on post.id = question.id
+            left join votes
+                on post.id = votes.post_id
         where
-           post.id = ?
+            post.id = ?
+        group by
+            post.id, question.title
         """
         return template.query(sql, RawQuestionMapper(), id).firstOrNull()
     }
@@ -150,14 +179,19 @@ class JdbcQuestionRepository (
     fun findAll(): List<RawQuestionData> {
         val sql = """
         select
-           post.id as id,
-           post.post_text as post_text,
-           post.posted as posted,
-           post.author_id as author_id,
-           question.title as title
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            question.title as title,
+            coalesce(sum(votes.vote),0) as score
         from
-           post inner join question
-           on post.id = question.id
+            post inner join question
+                on post.id = question.id
+            left join votes
+                on post.id = votes.post_id
+        group by
+            post.id, question.title
         """
         return template.query(sql, RawQuestionMapper())
     }
@@ -170,7 +204,8 @@ class RawQuestionMapper : RowMapper<RawQuestionData>{
                 id = rs.getLong("id"),
                 text = rs.getString("post_text"),
                 posted = rs.getTimestamp("posted").toLocalDateTime(),
-                title = rs.getString("title")
+                title = rs.getString("title"),
+                score = rs.getInt("score")
         )
     }
 }

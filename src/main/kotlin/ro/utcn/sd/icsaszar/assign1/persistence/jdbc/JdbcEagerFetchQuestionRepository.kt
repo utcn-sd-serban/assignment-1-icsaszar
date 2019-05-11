@@ -1,5 +1,7 @@
 package ro.utcn.sd.icsaszar.assign1.persistence.jdbc
 
+import ro.utcn.sd.icsaszar.assign1.exception.UserNotFoundException
+import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
@@ -54,10 +56,16 @@ class JdbcEagerFetchQuestionRepository(
     }
 
     private fun assembleQuestion(questionData: RawQuestionData): Question?{
+        fun withMoreUserInfo(userId: Long, answer: Answer): Answer{
+            val user = userRepository.findById(userId) ?: throw UserNotFoundException(userId)
+            answer.author = User(user.userName, id = user.id)
+            return answer
+        }
+
         val user = userRepository.findById(questionData.authorId) ?: return null
         val question = Question(questionData)
         answerRepository.findAllByAnswerTo_Id(questionData.id)
-                .map { Answer(it) }
+                .map { val a = Answer(it); withMoreUserInfo(it.authorId, a) }
                 .forEach {question.addAnswer(it)}
         question.setAuthor(user)
         val tags = tagRepository.findAllByQuestions_Id(questionData.id).toMutableSet()
@@ -65,6 +73,8 @@ class JdbcEagerFetchQuestionRepository(
         voteRepository.findAllByPost_Id(questionData.id)
                 .map { Vote(question, user, it.vote) }
                 .forEach { question.addVote(it) }
+        val score = voteRepository.getScoreForPost(questionData.id)
+        question.score = score
         return question
     }
 }

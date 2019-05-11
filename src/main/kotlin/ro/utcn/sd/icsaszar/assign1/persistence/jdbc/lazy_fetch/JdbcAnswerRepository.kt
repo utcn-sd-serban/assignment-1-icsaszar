@@ -42,16 +42,22 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
     fun findById(id: Long): RawAnswerData? {
         val sql = """
         select
-          post.id as id,
-          post.post_text as post_text,
-          post.posted as posted,
-          post.author_id as author_id,
-          answer.question_id as question_id
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            answer.question_id as question_id,
+            coalesce(sum(votes.vote),0) as score
         from
-           post inner join answer
-           on post.id = answer.id
+            post
+                inner join answer
+                    on post.id = answer.id
+                left join votes
+                    on post.id = votes.post_id
         where
-           post.id = ?
+            post.id = ?
+        group by
+            post.id, answer.question_id
         """
         return template.query(sql, RawAnswerMapper(), id).firstOrNull()
     }
@@ -59,14 +65,20 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
     fun findAll(): List<RawAnswerData> {
         val sql = """
         select
-          post.id as id,
-          post.post_text as post_text,
-          post.posted as posted,
-          post.author_id as author_id,
-          answer.question_id as question_id
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            answer.question_id as question_id,
+            coalesce(sum(votes.vote),0) as score
         from
-           post inner join answer
-           on post.id = answer.id
+            post
+                inner join answer
+                    on post.id = answer.id
+                left join votes
+                    on post.id = votes.post_id
+        group by
+            post.id, answer.question_id
         """
         return template.query(sql, RawAnswerMapper())
     }
@@ -74,16 +86,22 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
     fun findAllByAnswerTo_Id(questionId: Long): List<RawAnswerData> {
         val sql = """
         select
-          post.id as id,
-          post.post_text as post_text,
-          post.posted as posted,
-          post.author_id as author_id,
-          answer.question_id as question_id
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            answer.question_id as question_id,
+            coalesce(sum(votes.vote),0) as score
         from
-           post inner join answer
-           on post.id = answer.id
+            post
+                inner join answer
+                    on post.id = answer.id
+                left join votes
+                    on post.id = votes.post_id
         where
-           answer.question_id = ?
+            answer.question_id = ?
+        group by
+            post.id, answer.question_id
         """
         return template.query(sql, RawAnswerMapper(), questionId)
     }
@@ -91,16 +109,22 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
     fun findAllByAuthor_Id(id: Long): List<RawAnswerData> {
         val sql = """
         select
-          post.id as id,
-          post.post_text as post_text,
-          post.posted as posted,
-          post.author_id as author_id,
-          answer.question_id as question_id
+            post.id as id,
+            post.post_text as post_text,
+            post.posted as posted,
+            post.author_id as author_id,
+            answer.question_id as question_id,
+            coalesce(sum(votes.vote),0) as score
         from
-          post inner join answer
-           on post.id = answer.id
+            post
+                inner join answer
+                    on post.id = answer.id
+                left join votes
+                    on post.id = votes.post_id
         where
-          post.author_id = ?
+            post.author_id = ?
+        group by
+            post.id, answer.question_id
         """
         return template.query(sql, RawAnswerMapper(), id)
     }
@@ -112,7 +136,8 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
             post.post_text as post_text,
             post.posted as posted,
             post.author_id as author_id,
-            answer.question_id as question_id
+            answer.question_id as question_id,
+            coalesce(sum(votes.vote),0) as score
         from
             post inner join answer
                             on post.id = answer.id
@@ -136,7 +161,8 @@ class RawAnswerMapper : RowMapper<RawAnswerData> {
                 id = rs.getLong("id"),
                 text = rs.getString("post_text"),
                 posted = rs.getTimestamp("posted").toLocalDateTime(),
-                questionId = rs.getLong("question_id")
+                questionId = rs.getLong("question_id"),
+                score = rs.getInt("score")
         )
     }
 }

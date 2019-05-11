@@ -39,7 +39,7 @@ class JdbcTagRepository(private val template: JdbcTemplate){
 
         },
         keyHolder)
-        return keyHolder.key!!.toLong()
+        return keyHolder.keys!!["id"]!! as Long
     }
 
     private fun update(id: Long, entity: Tag) {

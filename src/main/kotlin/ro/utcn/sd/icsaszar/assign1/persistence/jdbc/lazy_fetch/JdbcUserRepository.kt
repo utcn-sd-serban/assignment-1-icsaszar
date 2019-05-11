@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.jdbc.support.KeyHolder
 import ro.utcn.sd.icsaszar.assign1.model.User
-import ro.utcn.sd.icsaszar.assign1.persistence.api.UserRepository
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
@@ -18,7 +17,7 @@ class JdbcUserRepository(private val template: JdbcTemplate){
     }
 
     private fun insert(entity: User): Long{
-        val sql: String = "insert into users (user_name, is_mod, is_banned) values (?,?,?)"
+        val sql: String = "insert into users (user_name,  is_mod, is_banned, password) values (?,?,?,?)"
         val keyHolder: KeyHolder = GeneratedKeyHolder()
         template.update ( { conn ->
             val ps: PreparedStatement =
@@ -26,11 +25,11 @@ class JdbcUserRepository(private val template: JdbcTemplate){
             ps.setString(1, entity.userName)
             ps.setBoolean(2, entity.isMod)
             ps.setBoolean(3, entity.isBanned)
+            ps.setString(4, entity.password)
             ps
-
         },
                 keyHolder)
-        return keyHolder.key!!.toLong()
+        return keyHolder.keys!!["id"]!! as Long
     }
 
     private fun update(id: Long, entity: User) {
@@ -68,6 +67,7 @@ class UserMapper : RowMapper<User> {
     override fun mapRow(rs: ResultSet, rowNum: Int): User? {
         return User(
                 rs.getString("user_name"),
+                rs.getString("password"),
                 rs.getLong("id"),
                 isMod =  rs.getBoolean("is_mod"),
                 isBanned = rs.getBoolean("is_banned")
