@@ -27,8 +27,12 @@ abstract class Post(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         override var id: Long? = null,
 
+        @javax.persistence.Transient
+        open var score: Int? = null,
+
         @OneToMany(mappedBy = "post")
         open var votes: MutableSet<Vote> = mutableSetOf()
+
 ) : GenericEntity {
 
     open fun setAuthor(author: User): Post{

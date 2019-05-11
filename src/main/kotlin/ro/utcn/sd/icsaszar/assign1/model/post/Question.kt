@@ -1,6 +1,8 @@
 package ro.utcn.sd.icsaszar.assign1.model.post
 
 import org.hibernate.validator.constraints.Length
+import ro.utcn.sd.icsaszar.assign1.dto.ConvertibleToDTO
+import ro.utcn.sd.icsaszar.assign1.dto.QuestionDTO
 import ro.utcn.sd.icsaszar.assign1.model.User
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -12,6 +14,7 @@ data class RawQuestionData(
         val text: String,
         val posted: LocalDateTime,
         val title: String,
+        val score: Int,
         val id: Long
 )
 
@@ -22,10 +25,10 @@ class Question(
         posted: LocalDateTime = LocalDateTime.now(),
 
         id: Long? = null,
-
+        score: Int? = null,
         @Length(min = 3)
         var title: String = ""
-        ) : Post(author, text, posted, id){
+        ) : Post(author, text, posted, id, score), ConvertibleToDTO<QuestionDTO>{
 
     init {
         author.addPost(this)
@@ -76,7 +79,7 @@ class Question(
         } else false
     }
 
-    fun display(score: Int? = null): String {
+    fun display(): String {
         val formatter =
                 DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
         val sb: StringBuilder = StringBuilder()
@@ -99,5 +102,9 @@ class Question(
         if (other !is Question) return false
 
         return id?.equals(other.id) ?: false
+    }
+
+    override fun toDTO(): QuestionDTO {
+        return QuestionDTO.fromQuestion(this)
     }
 }

@@ -1,5 +1,7 @@
 package ro.utcn.sd.icsaszar.assign1.model.post
 
+import ro.utcn.sd.icsaszar.assign1.dto.AnswerDTO
+import ro.utcn.sd.icsaszar.assign1.dto.ConvertibleToDTO
 import ro.utcn.sd.icsaszar.assign1.model.User
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -12,7 +14,8 @@ data class RawAnswerData(
         val text: String,
         val posted: LocalDateTime,
         val id: Long,
-        val questionId: Long
+        val questionId: Long,
+        val score: Int
 )
 
 @Entity
@@ -23,9 +26,11 @@ class Answer(
 
         posted: LocalDateTime = LocalDateTime.now(),
 
-        id: Long? = null
+        id: Long? = null,
 
-) : Post(author, text, posted, id){
+        score: Int? = null
+
+) : Post(author, text, posted, id, score), ConvertibleToDTO<AnswerDTO>{
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id", nullable = false)
     var answerTo: Question? = null
@@ -37,7 +42,9 @@ class Answer(
     constructor(data: RawAnswerData):this(
             text = data.text,
             posted = data.posted,
-            id = data.id
+            id = data.id,
+            author = User(id = data.authorId),
+            score = data.score
     )
 
     fun setQuestion(question: Question): Answer{
@@ -74,5 +81,7 @@ class Answer(
         return id?.equals(other.id) ?: false
     }
 
-
+    override fun toDTO(): AnswerDTO {
+        return AnswerDTO.fromAnswer(this)
+    }
 }

@@ -2,6 +2,8 @@ package ro.utcn.sd.icsaszar.assign1.model
 
 import org.hibernate.annotations.Check
 import org.hibernate.validator.constraints.Length
+import ro.utcn.sd.icsaszar.assign1.dto.ConvertibleToDTO
+import ro.utcn.sd.icsaszar.assign1.dto.UserDTO
 import ro.utcn.sd.icsaszar.assign1.model.post.Post
 import javax.persistence.*
 
@@ -11,6 +13,8 @@ data class User(
     @Length(min = 3)
     @Column(unique = true)
     var userName: String = "",
+
+    var password: String = "password",
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +30,7 @@ data class User(
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var votes: MutableSet<Vote> = mutableSetOf()
 
-) : GenericEntity {
+) : GenericEntity, ConvertibleToDTO<UserDTO> {
 
     fun addPost(post: Post): User{
         posts.add(post)
@@ -53,5 +57,9 @@ data class User(
         if (other !is User) return false
 
         return id?.equals(other.id) ?: false
+    }
+
+    override fun toDTO(): UserDTO {
+        return UserDTO.fromUser(this)
     }
 }

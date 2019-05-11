@@ -1,5 +1,7 @@
 package ro.utcn.sd.icsaszar.assign1.model
 
+import ro.utcn.sd.icsaszar.assign1.dto.ConvertibleToDTO
+import ro.utcn.sd.icsaszar.assign1.dto.VoteDTO
 import ro.utcn.sd.icsaszar.assign1.model.post.Post
 import java.io.Serializable
 import javax.persistence.*
@@ -21,7 +23,7 @@ data class Vote(
     var user: User,
 
     var vote: Short
-): Serializable{
+): Serializable, ConvertibleToDTO<VoteDTO> {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Vote) return false
@@ -34,6 +36,10 @@ data class Vote(
 
     override fun hashCode(): Int {
         return 31
+    }
+
+    override fun toDTO(): VoteDTO {
+        return VoteDTO.fromVote(this)
     }
 }
 
