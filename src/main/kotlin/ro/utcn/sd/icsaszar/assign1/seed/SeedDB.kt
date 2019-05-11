@@ -3,6 +3,7 @@ package ro.utcn.sd.icsaszar.assign1.seed
 import org.springframework.boot.CommandLineRunner
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ro.utcn.sd.icsaszar.assign1.model.User
@@ -16,7 +17,10 @@ import ro.utcn.sd.icsaszar.assign1.persistence.api.RepositoryFactory
 @Component
 // The Order ensures that this command line runner is ran first (before the ConsoleController)
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
+class StudentSeed(
+        private val factory: RepositoryFactory,
+        private val passwordEncoder: PasswordEncoder
+) : CommandLineRunner {
 
 
     @Transactional
@@ -24,13 +28,19 @@ class StudentSeed(private val factory: RepositoryFactory) : CommandLineRunner {
     override fun run(vararg args: String) {
         println("Seeding users")
         //http://www.optipess.com/2018/10/15/titsmcgee4782/
-        val users = mutableListOf(User("TitsMcGee4782"), User("User2"), User("User3"))
+
+        val users = mutableListOf(
+            User("TitsMcGee4782", passwordEncoder.encode("p@assW0rd")),
+            User("User2", passwordEncoder.encode("dhas9d8hdq2de")),
+            User("User3", passwordEncoder.encode("lkmdoiasjd09"))
+        )
         val userRepository = factory.userRepository
         userRepository.apply {
             if (findAll().isEmpty()) {
                 users.replaceAll { save(it) }
             }
         }
+
         println("Seeding tags")
         val tagRepository = factory.tagRepository
         val tags = listOf(Tag("java"), Tag("kotlin"), Tag("spring-boot"), Tag("general"))
