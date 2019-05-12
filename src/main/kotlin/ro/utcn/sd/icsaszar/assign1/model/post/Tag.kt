@@ -1,5 +1,7 @@
 package ro.utcn.sd.icsaszar.assign1.model.post
 
+import ro.utcn.sd.icsaszar.assign1.dto.ConvertibleToDTO
+import ro.utcn.sd.icsaszar.assign1.dto.TagDTO
 import ro.utcn.sd.icsaszar.assign1.model.GenericEntity
 import javax.persistence.*
 
@@ -11,7 +13,7 @@ data class Tag(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         override var id: Long? = null
 
-): GenericEntity {
+): GenericEntity, ConvertibleToDTO<TagDTO> {
         @ManyToMany(mappedBy = "tags", cascade = [CascadeType.MERGE], fetch = FetchType.EAGER)
         var questions: MutableList<Question> = mutableListOf()
 
@@ -37,5 +39,7 @@ data class Tag(
         return id?.equals(other.id) ?: false
     }
 
-
+    override fun toDTO(): TagDTO {
+        return TagDTO.fromTag(this)
+    }
 }

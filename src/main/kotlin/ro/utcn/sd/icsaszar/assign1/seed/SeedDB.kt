@@ -26,6 +26,7 @@ class StudentSeed(
     @Transactional
     @Throws(Exception::class)
     override fun run(vararg args: String) {
+        clear()
         println("Seeding users")
         //http://www.optipess.com/2018/10/15/titsmcgee4782/
 
@@ -98,5 +99,16 @@ class StudentSeed(
                 }
             }
         }
+    }
+
+    fun clear(){
+        factory.apply {
+            answerRepository.deleteAll()
+            questionRepository.deleteAll()
+            tagRepository.deleteAll()
+            userRepository.deleteAll()
+            voteRepository.deleteAll()
+        }
+
     }
 }

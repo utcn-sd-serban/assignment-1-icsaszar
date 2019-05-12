@@ -3,6 +3,7 @@ package ro.utcn.sd.icsaszar.assign1.model.post
 import org.hibernate.validator.constraints.Length
 import ro.utcn.sd.icsaszar.assign1.dto.ConvertibleToDTO
 import ro.utcn.sd.icsaszar.assign1.dto.QuestionDTO
+import ro.utcn.sd.icsaszar.assign1.dto.TagDTO
 import ro.utcn.sd.icsaszar.assign1.model.User
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

@@ -1,11 +1,11 @@
 package ro.utcn.sd.icsaszar.assign1.service
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Post
 import ro.utcn.sd.icsaszar.assign1.persistence.api.RepositoryFactory
-import javax.transaction.Transactional
 
 @Service
 class VoteService(private val repositoryFactory: RepositoryFactory){
@@ -48,6 +48,13 @@ class VoteService(private val repositoryFactory: RepositoryFactory){
     fun getPostScore(post: Post): Int{
         with(repositoryFactory.voteRepository){
             return getScoreForPost(post.id!!)
+        }
+    }
+
+    @Transactional
+    fun getVoteByUser(userId: Long): List<Vote>{
+        with(repositoryFactory.voteRepository){
+            return findAllByUser_Id(userId)
         }
     }
 }
