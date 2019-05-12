@@ -4,7 +4,7 @@ import ro.utcn.sd.icsaszar.assign1.model.User
 
 data class UserDTO (
         val id: Long,
-        val userName: String,
+        val name: String,
         val votes: List<VoteDTO>
         ){
 
@@ -20,3 +20,7 @@ data class UserDTO (
 
 }
 
+data class UserDetailsDTO (
+        val id: Long,
+        val votes: List<VoteDTO>
+)

@@ -5,6 +5,7 @@ import ro.utcn.sd.icsaszar.assign1.model.post.Answer
 data class AnswerDTO (val id: Long,
                       val text: String,
                       val author: UserDTO,
+                      val posted: String,
                       val score: Int?)
 
 {
@@ -14,6 +15,7 @@ data class AnswerDTO (val id: Long,
                     answer.id!!,
                     answer.postText,
                     answer.author.toDTO(),
+                    answer.posted.toString(),
                     answer.score)
         }
     }
