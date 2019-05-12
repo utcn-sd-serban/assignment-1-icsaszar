@@ -15,6 +15,39 @@ Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
 
 ###
 
+POST http://localhost:8080/posts
+Accept: application/json
+Cache-Control: no-cache
+Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
+Content-Type: application/json
+
+{
+  "title": "Test title",
+  "text": "Test text",
+  "tags": [
+    {
+      "name": "java",
+      "id": 1
+    }
+  ]
+}
+
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("The author is the current user", function(){
+      client.assert(response.body.author.name === 'User2', "The post author is not User2")
+    });
+
+    client.test("The post text is 'Test text'", function() {
+      client.assert(response.body.text === "Test text", "The post text is not 'Test text'")
+    });
+%}
+
+###
 GET http://localhost:8080/posts/1
 Accept: application/json
 Cache-Control: no-cache
@@ -30,6 +63,48 @@ Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
     });
 %}
 
+###
 
+GET http://localhost:8080/account/details
+Accept: application/json
+Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("The user has id 2", function() {
+        client.assert(response.body.id === 2, "Expected id 2");
+    });
+
+    client.test("The user has 4 votes", function(){
+        client.assert(response.body.votes.length === 4, "Expected 4 votes")
+    });
+
+%}
 
 ###
+
+GET http://localhost:8080/tags
+Accept: application/json
+Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("There are 4 tags", function() {
+        client.assert(response.body.length === 4, "Expected 4 tags");
+    });
+
+    client.test("Every tag has a name and an id", function() {
+        response.body.forEach(function(t) {
+            client.assert(t.name !== undefined && t.id !== undefined)
+        }, "Expected each tag to have a name and an id");
+    });
+%}
+
+###
+

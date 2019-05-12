@@ -333,7 +333,7 @@ class CommandLineController(
             //I know q.display(voteService.getPostScore(q)) is horrible,
             //but getting it right with hibernate (using ResultSetMapping)
             //is something don't have enough time to attempt
-            println(q.display(voteService.getPostScore(q)))
+            println(q.display())
             println("".padEnd(100, '-'))
         }
     }
