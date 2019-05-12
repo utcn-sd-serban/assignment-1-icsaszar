@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.jdbc.support.KeyHolder
 import ro.utcn.sd.icsaszar.assign1.model.User
+import ro.utcn.sd.icsaszar.assign1.model.Vote
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
@@ -50,6 +51,11 @@ class JdbcUserRepository(private val template: JdbcTemplate){
     fun delete(entity: User) {
         val sql = "delete from users where id = ?"
         template.update(sql, entity.id!!)
+    }
+
+    fun deleteAll() {
+        val sql = "delete from users"
+        template.update(sql)
     }
 
     fun findById(id: Long): User? {

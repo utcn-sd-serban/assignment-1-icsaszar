@@ -28,6 +28,8 @@ class JdbcEagerFetchTagRepository(
     override fun delete(entity: Tag) =
         tagRepository.delete(entity)
 
+    override fun deleteAll() = tagRepository.deleteAll()
+
     override fun findById(id: Long): Tag? {
         val tag = tagRepository.findById(id) ?: return null
         return assembleTag(tag)

@@ -45,6 +45,8 @@ class JdbcEagerFetchQuestionRepository(
     override fun delete(entity: Question) =
         questionRepository.delete(entity)
 
+    override fun deleteAll() = questionRepository.deleteAll()
+
     override fun findById(id: Long): Question? {
         val questionData = questionRepository.findById(id) ?: return null
         return assembleQuestion(questionData)

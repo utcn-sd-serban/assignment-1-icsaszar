@@ -39,4 +39,9 @@ class JdbcPostRepository(private val template: JdbcTemplate) {
         val sql: String = "delete from post where id = ?"
         template.update(sql, entity.id!!)
     }
+
+    fun deleteAll() {
+        val sql = "delete from post"
+        template.update(sql)
+    }
 }

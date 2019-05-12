@@ -46,6 +46,11 @@ class JdbcVoteRepository(private val template: JdbcTemplate){
         template.update(sql, entity.post.id!!, entity.user.id!!)
     }
 
+    fun deleteAll() {
+        val sql = "delete from votes"
+        template.update(sql)
+    }
+
     fun findAllByPost_Id(id: Long): List<RawVoteData> {
         val sql = "select * from votes where post_id = ?"
         return template.query(sql, VoteMapper(), id)

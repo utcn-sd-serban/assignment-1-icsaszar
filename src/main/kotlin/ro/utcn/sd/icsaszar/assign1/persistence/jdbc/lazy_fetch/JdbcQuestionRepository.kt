@@ -134,6 +134,7 @@ class JdbcQuestionRepository (
             entity.id = postRepository.insert(entity)
             insert(entity)
             entity.tags.forEach { insertTag(entity.id!!, it.id!!)}
+            entity.score = 0
             entity
         } else {
             postRepository.update(entity.id!!, entity)
@@ -153,6 +154,12 @@ class JdbcQuestionRepository (
         postRepository.delete(entity)
     }
 
+
+    fun deleteAll() {
+        val sql = "delete from question"
+        template.update(sql)
+        postRepository.deleteAll()
+    }
 
     fun findById(id: Long): RawQuestionData? {
         val sql = """

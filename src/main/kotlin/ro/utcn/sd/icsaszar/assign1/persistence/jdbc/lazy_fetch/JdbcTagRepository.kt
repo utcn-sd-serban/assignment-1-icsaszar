@@ -62,6 +62,11 @@ class JdbcTagRepository(private val template: JdbcTemplate){
         template.update(sql, entity.id!!)
     }
 
+    fun deleteAll() {
+        val sql = "delete from tags"
+        template.update(sql)
+    }
+
     fun findById(id: Long): Tag? {
         val sql = "select * from tags where id = ?"
         return template.query(sql, TagMapper(), id).firstOrNull()

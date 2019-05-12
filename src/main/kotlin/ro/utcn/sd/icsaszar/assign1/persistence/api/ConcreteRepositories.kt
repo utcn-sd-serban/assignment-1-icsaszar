@@ -21,7 +21,7 @@ interface AnswerRepository : GenericRepository<Answer>{
 }
 
 interface UserRepository : GenericRepository<User>{
-    fun findByUserName(userName: String) : User?
+    fun findByUserName(userName: String): User?
 }
 
 interface TagRepository : GenericRepository<Tag>{
@@ -32,6 +32,7 @@ interface TagRepository : GenericRepository<Tag>{
 interface VoteRepository {
     fun save(vote: Vote): Vote
     fun delete(vote: Vote)
+    fun deleteAll()
     fun findAllByPost_Id(postId: Long): List<Vote>
     fun findAllByUser_Id(userId: Long): List<Vote>
     fun getScoreForPost(postId: Long): Int

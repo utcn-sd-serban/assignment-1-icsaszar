@@ -38,6 +38,12 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
         postRepository.delete(entity)
     }
 
+    fun deleteAll(){
+        val sql = "delete from answer"
+        template.update(sql)
+        postRepository.deleteAll()
+    }
+
 
     fun findById(id: Long): RawAnswerData? {
         val sql = """

@@ -8,6 +8,9 @@ import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 import ro.utcn.sd.icsaszar.assign1.persistence.api.*
 
 class QuestionInMemoryRepository(private val mainRepository: InMemoryRepository) : QuestionRepository{
+    override fun deleteAll() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun findAllByAuthor_Id(id: Long): List<Question> =
         findAll().filter { it.author.id!! == id }
@@ -48,9 +51,16 @@ class AnswerInMemoryRepository(private val mainRepository: InMemoryRepository) :
     override fun findById(id: Long): Answer? = mainRepository.findAnswerById(id)
 
     override fun findAll(): List<Answer> = mainRepository.findAllAnswers()
+
+    override fun deleteAll() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
 
 class TagInMemoryRepository(private val mainRepository: InMemoryRepository) : TagRepository {
+    override fun deleteAll() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun findAllByQuestions_Id(id: Long): List<Tag> =
         mainRepository.findAllTags().filter { tag -> id in tag.questions.map { it.id }}
@@ -68,6 +78,9 @@ class TagInMemoryRepository(private val mainRepository: InMemoryRepository) : Ta
 }
 
 class UserInMemoryRepository(private val mainRepository: InMemoryRepository) : UserRepository {
+    override fun deleteAll() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun findByUserName(userName: String): User? =
         findAll().find { it.userName == userName }
@@ -82,6 +95,10 @@ class UserInMemoryRepository(private val mainRepository: InMemoryRepository) : U
 }
 
 class VoteInMemoryRepository(private val mainRepository: InMemoryRepository): VoteRepository{
+    override fun deleteAll() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun save(vote: Vote): Vote =
         mainRepository.saveVote(vote)
 

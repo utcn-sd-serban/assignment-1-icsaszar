@@ -28,6 +28,8 @@ class JdbcEagerFetchUserRepository(
     override fun delete(entity: User) =
         userRepository.delete(entity)
 
+    override fun deleteAll() = userRepository.deleteAll()
+
     override fun findById(id: Long): User? {
         val user = userRepository.findById(id) ?: return null
         return assembleUser(user)

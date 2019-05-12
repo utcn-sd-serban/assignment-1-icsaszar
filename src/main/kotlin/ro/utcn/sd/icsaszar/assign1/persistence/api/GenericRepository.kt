@@ -8,4 +8,5 @@ interface GenericRepository<T : GenericEntity> {
     fun delete(entity: T)
     fun findById(id: Long): T?
     fun findAll(): List<T>
+    fun deleteAll()
 }

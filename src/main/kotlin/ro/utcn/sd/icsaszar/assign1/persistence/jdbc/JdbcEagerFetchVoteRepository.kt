@@ -23,6 +23,8 @@ class JdbcEagerFetchVoteRepository(
     override fun delete(vote: Vote) =
         voteRepository.delete(vote)
 
+    override fun deleteAll() = voteRepository.deleteAll()
+
     override fun findAllByPost_Id(postId: Long): List<Vote> =
         voteRepository.findAllByPost_Id(postId).mapNotNull {assembleVote(it)}
 

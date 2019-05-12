@@ -31,6 +31,8 @@ class JdbcEagerFetchAnswerRepository(
 
     override fun delete(entity: Answer) = answerRepository.delete(entity)
 
+    override fun deleteAll() = answerRepository.deleteAll()
+
     override fun findById(id: Long): Answer? {
         val answer = answerRepository.findById(id) ?: return null
         return assembleAnswer(answer)
