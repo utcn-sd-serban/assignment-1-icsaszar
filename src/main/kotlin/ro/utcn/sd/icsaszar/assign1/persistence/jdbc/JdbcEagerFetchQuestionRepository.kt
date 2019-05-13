@@ -75,8 +75,6 @@ class JdbcEagerFetchQuestionRepository(
         voteRepository.findAllByPost_Id(questionData.id)
                 .map { Vote(question, user, it.vote) }
                 .forEach { question.addVote(it) }
-        val score = voteRepository.getScoreForPost(questionData.id)
-        question.score = score
         return question
     }
 }

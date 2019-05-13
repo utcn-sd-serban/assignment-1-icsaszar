@@ -101,8 +101,10 @@ Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
 
     client.test("Every tag has a name and an id", function() {
         response.body.forEach(function(t) {
-            client.assert(t.name !== undefined && t.id !== undefined)
-        }, "Expected each tag to have a name and an id");
+            client.assert(
+                t.name !== undefined && t.id !== undefined,
+                "Expected the tag to have a name and an id")
+        });
     });
 %}
 

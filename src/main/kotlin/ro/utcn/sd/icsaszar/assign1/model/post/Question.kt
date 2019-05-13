@@ -53,7 +53,8 @@ class Question(
             text = data.text,
             posted = data.posted,
             id = data.id,
-            title = data.title
+            title = data.title,
+            score = data.score
     )
 
     fun addAnswer(answer: Answer): Question{
