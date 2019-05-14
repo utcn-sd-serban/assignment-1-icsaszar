@@ -25,6 +25,7 @@ class JdbcAnswerRepository(private val template: JdbcTemplate,
         return if (entity.id == null) {
             entity.id = postRepository.insert(entity)
             insert(entity)
+            entity.score = 0
             entity
         } else {
             postRepository.update(entity.id!!, entity)

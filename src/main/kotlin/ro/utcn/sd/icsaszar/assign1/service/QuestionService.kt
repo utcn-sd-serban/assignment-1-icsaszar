@@ -2,6 +2,7 @@ package ro.utcn.sd.icsaszar.assign1.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import ro.utcn.sd.icsaszar.assign1.exception.PostNotFoundException
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
@@ -21,6 +22,11 @@ class QuestionService(private val repositoryFactory: RepositoryFactory){
         val question = Question(author, text, title = title)
         question.addTags(tags)
         return repositoryFactory.questionRepository.save(question)
+    }
+
+    @Transactional
+    fun deleteQuestion(question: Question){
+        return repositoryFactory.questionRepository.delete(question)
     }
 
     @Transactional

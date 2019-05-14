@@ -21,3 +21,8 @@ data class AnswerDTO (val id: Long,
     }
 
 }
+
+data class NewAnswerDTO (
+        val postId: Long,
+        val text: String
+)
