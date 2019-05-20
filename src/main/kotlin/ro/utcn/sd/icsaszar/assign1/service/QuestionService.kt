@@ -1,7 +1,9 @@
 package ro.utcn.sd.icsaszar.assign1.service
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import ro.utcn.sd.icsaszar.assign1.event.NewQuestionEvent
 import ro.utcn.sd.icsaszar.assign1.exception.PostNotFoundException
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
@@ -9,7 +11,10 @@ import ro.utcn.sd.icsaszar.assign1.model.post.Tag
 import ro.utcn.sd.icsaszar.assign1.persistence.api.RepositoryFactory
 
 @Service
-class QuestionService(private val repositoryFactory: RepositoryFactory){
+class QuestionService(
+        private val repositoryFactory: RepositoryFactory,
+        private val eventPublisher: ApplicationEventPublisher
+){
 
     @Transactional
     fun listAllQuestions(): List<Question> = repositoryFactory.questionRepository.findAll()
@@ -21,7 +26,9 @@ class QuestionService(private val repositoryFactory: RepositoryFactory){
     fun postQuestion(author: User, title: String, text: String, tags: Set<Tag>): Question{
         val question = Question(author, text, title = title)
         question.addTags(tags)
-        return repositoryFactory.questionRepository.save(question)
+        val returnValue = repositoryFactory.questionRepository.save(question)
+        eventPublisher.publishEvent(NewQuestionEvent(returnValue.toDTO()))
+        return returnValue
     }
 
     @Transactional
@@ -43,5 +50,5 @@ class QuestionService(private val repositoryFactory: RepositoryFactory){
 
     @Transactional
     fun findAllByAuthorId(id: Long): List<Question> =
-            repositoryFactory.questionRepository.findAllByAuthor_Id(id)
+        repositoryFactory.questionRepository.findAllByAuthor_Id(id)
 }

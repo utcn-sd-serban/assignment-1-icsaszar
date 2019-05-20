@@ -2,11 +2,12 @@ package ro.utcn.sd.icsaszar.assign1.dto
 
 import ro.utcn.sd.icsaszar.assign1.model.Vote
 
-data class VoteDTO(val postId: Long, val direction: Short) {
+data class VoteDTO(val postId: Long, val direction: String) {
 
     companion object {
         fun fromVote(vote: Vote): VoteDTO{
-            return VoteDTO(vote.post.id!!, vote.vote)
+            val dir = if (vote.vote.compareTo(1) == 0) "up" else "down"
+            return VoteDTO(vote.post.id!!, dir)
         }
     }
 

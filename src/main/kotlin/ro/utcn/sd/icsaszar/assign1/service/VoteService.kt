@@ -1,38 +1,48 @@
 package ro.utcn.sd.icsaszar.assign1.service
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import ro.utcn.sd.icsaszar.assign1.event.NewQuestionEvent
+import ro.utcn.sd.icsaszar.assign1.event.NewVoteEvent
+import ro.utcn.sd.icsaszar.assign1.exception.VotingException
 import ro.utcn.sd.icsaszar.assign1.model.User
 import ro.utcn.sd.icsaszar.assign1.model.Vote
 import ro.utcn.sd.icsaszar.assign1.model.post.Post
 import ro.utcn.sd.icsaszar.assign1.persistence.api.RepositoryFactory
 
 @Service
-class VoteService(private val repositoryFactory: RepositoryFactory){
+class VoteService(
+        private val repositoryFactory: RepositoryFactory,
+        private val eventPublisher: ApplicationEventPublisher){
     @Transactional
-    fun upVote(post: Post, user: User): Boolean{
-        if(post.author.id!! == user.id!!) return false
+    fun upVote(post: Post, user: User): Vote{
+        if(post.author.id!! == user.id!!)
+            throw VotingException.votingOnOwnPost
         with(repositoryFactory.voteRepository){
-            val oldVote = findByIds(post.id!!, user.id!!)
-            if(oldVote != null)
-                if (oldVote.vote.toInt() == 1)
-                    return false
-            save(Vote(post, user, 1))
-            return true
+            return save(Vote(post, user, 1))
         }
     }
 
     @Transactional
-    fun downVote(post: Post, user: User): Boolean{
-        if(post.author.id!! == user.id!!) return false
+    fun downVote(post: Post, user: User): Vote{
+        if(post.author.id!! == user.id!!)
+            throw VotingException.votingOnOwnPost
         with(repositoryFactory.voteRepository){
-            val oldVote = findByIds(post.id!!, user.id!!)
-            if(oldVote != null)
-                if (oldVote.vote.toInt() == -1)
-                    return false
-            save(Vote(post, user, -1))
-            return true
+            return save(Vote(post, user, -1))
         }
+    }
+
+    @Transactional
+    fun vote(post: Post, direction: Short, user: User): Vote {
+
+        val result = when {
+            direction.compareTo(1) == 0 -> upVote(post, user)
+            direction.compareTo(-1) == 0 -> downVote(post, user)
+            else -> throw Exception("Invalid Parameter")
+        }
+        eventPublisher.publishEvent(NewVoteEvent(result.toDTO()))
+        return result
     }
 
     @Transactional
