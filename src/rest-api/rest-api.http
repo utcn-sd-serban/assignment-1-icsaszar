@@ -1,4 +1,4 @@
-GET http://localhost:8080/posts
+GET http://localhost:8080/questions
 Accept: application/json
 Cache-Control: no-cache
 Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
@@ -15,7 +15,7 @@ Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
 
 ###
 
-POST http://localhost:8080/posts
+POST http://localhost:8080/questions
 Accept: application/json
 Cache-Control: no-cache
 Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
@@ -48,7 +48,7 @@ Content-Type: application/json
 %}
 
 ###
-GET http://localhost:8080/posts/1
+GET http://localhost:8080/questions/1
 Accept: application/json
 Cache-Control: no-cache
 Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
