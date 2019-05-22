@@ -83,15 +83,15 @@ class StudentSeed(
         val votes = mutableListOf<Vote>()
         votes += Vote(questions[0], users[1], -1)
         votes += Vote(questions[0], users[2], -1)
-        votes += Vote(questions[2], users[1], 1)
+        votes += Vote(questions[2], users[0], 1)
         votes += Vote(questions[3], users[1], -1)
 
         votes += Vote(answers[4], users[1], -1)
         votes += Vote(answers[4], users[2], -1)
         votes += Vote(answers[0], users[1], 1)
         votes += Vote(answers[1], users[2], 1)
-        votes += Vote(answers[1], users[0], 1)
-        votes += Vote(answers[3], users[2], 1)
+        votes += Vote(answers[1], users[1], 1)
+        votes += Vote(answers[3], users[1], 1)
         voteRepository.apply {
             if(findAll().isEmpty()){
                 votes.forEach {
