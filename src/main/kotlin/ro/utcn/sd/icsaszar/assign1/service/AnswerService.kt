@@ -13,7 +13,7 @@ import ro.utcn.sd.icsaszar.assign1.persistence.api.RepositoryFactory
 @Service
 class AnswerService(
         private val repositoryFactory: RepositoryFactory,
-        private val eventPublisher: ApplicationEventPublisher){
+        private val eventPublisher: ApplicationEventPublisher) {
 
     @Transactional
     fun submitAnswer(text: String, author: User, question: Question): Answer {
@@ -26,15 +26,15 @@ class AnswerService(
 
     @Transactional
     fun findAllByPostIdOrderByScoreDesc(postId: Long): List<Answer> =
-        repositoryFactory.answerRepository.findAllByPostIdOrderByScoreDesc(postId)
+            repositoryFactory.answerRepository.findAllByPostIdOrderByScoreDesc(postId)
 
     @Transactional
     fun findAllByAuthorId(id: Long): List<Answer> =
-        repositoryFactory.answerRepository.findAllByAuthor_Id(id)
+            repositoryFactory.answerRepository.findAllByAuthor_Id(id)
 
     @Transactional
     fun findById(id: Long): Answer? =
-        repositoryFactory.answerRepository.findById(id)
+            repositoryFactory.answerRepository.findById(id)
 
     @Transactional
     fun deleteAnswer(answer: Answer) {
@@ -43,6 +43,9 @@ class AnswerService(
     }
 
     @Transactional
-    fun updateAnswer(answer: Answer) =
-        repositoryFactory.answerRepository.save(answer)
+    fun updateAnswer(answer: Answer): Answer {
+        val result = repositoryFactory.answerRepository.save(answer)
+        eventPublisher.publishEvent(NewAnswerEvent(NewAnswerPayload(result.answerTo!!.id!!, result.toDTO())))
+        return result
+    }
 }
