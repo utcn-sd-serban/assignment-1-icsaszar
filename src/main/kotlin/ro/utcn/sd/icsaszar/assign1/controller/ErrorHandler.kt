@@ -29,6 +29,6 @@ class ErrorHandler{
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(VotingException::class)
     fun handleVotingException(ex: VotingException): ErrorDTO{
-        return ErrorDTO.Companion.fromException(ex)
+        return ErrorDTO.fromException(ex)
     }
 }
