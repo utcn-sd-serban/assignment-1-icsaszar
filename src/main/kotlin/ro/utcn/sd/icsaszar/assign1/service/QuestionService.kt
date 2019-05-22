@@ -32,6 +32,11 @@ class QuestionService(
     }
 
     @Transactional
+    fun updateQuestion(question: Question): Question{
+        return repositoryFactory.questionRepository.save(question)
+    }
+
+    @Transactional
     fun deleteQuestion(question: Question){
         return repositoryFactory.questionRepository.delete(question)
     }
