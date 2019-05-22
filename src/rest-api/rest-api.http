@@ -15,6 +15,27 @@ Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
 
 ###
 
+GET http://localhost:8080/questions?tag=java
+Accept: application/json
+Cache-Control: no-cache
+Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
+
+###
+
+GET http://localhost:8080/questions?title=help
+Accept: application/json
+Cache-Control: no-cache
+Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
+
+###
+
+GET http://localhost:8080/questions?title=help&tag=java
+Accept: application/json
+Cache-Control: no-cache
+Authorization: Basic VXNlcjI6ZGhhczlkOGhkcTJkZQ==
+
+###
+
 POST http://localhost:8080/questions
 Accept: application/json
 Cache-Control: no-cache

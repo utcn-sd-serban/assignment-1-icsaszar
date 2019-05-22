@@ -10,6 +10,7 @@ import ro.utcn.sd.icsaszar.assign1.dto.QuestionDTO
 import ro.utcn.sd.icsaszar.assign1.event.Event
 import ro.utcn.sd.icsaszar.assign1.event.NewQuestionEvent
 import ro.utcn.sd.icsaszar.assign1.exception.AuthorizationException
+import ro.utcn.sd.icsaszar.assign1.exception.InvalidTagException
 import ro.utcn.sd.icsaszar.assign1.exception.PostNotFoundException
 import ro.utcn.sd.icsaszar.assign1.model.post.Question
 import ro.utcn.sd.icsaszar.assign1.model.post.Tag
@@ -25,10 +26,24 @@ class QuestionController(
 ) {
 
     @GetMapping("/questions")
-    fun getAllQuestions(): List<QuestionDTO> {
-        val questions = questionService.listAllQuestionsByPosted()
-        return questions.map { it.toDTO() }
+    fun getAllQuestions(
+            @RequestParam(name = "title", required = false) title: String?,
+            @RequestParam(name = "tag", required = false) tagName: String?
+    ): List<QuestionDTO> {
+        val result = if (title == null && tagName == null) {
+            questionService.listAllQuestionsByPosted()
+        } else if (title != null && tagName != null) {
+            throw Exception("Only one parameter should be given!")
+        } else if (title != null) {
+            questionService.findAllByTitleContaining(title)
+        } else if(tagName != null){
+            val tag = tagService.findTagByName(tagName) ?: throw InvalidTagException(tagName)
+            questionService.findAllByTag(tag)
+        } else throw Exception("The type checker won't shut up about tagName being null")
+
+        return result.map { it.toDTO() }
     }
+
 
     @PostMapping("/questions")
     fun addQuestion(@RequestBody questionDTO: NewQuestionDTO): QuestionDTO {
@@ -88,7 +103,7 @@ class QuestionController(
     ): AnswerDTO {
         val currentUser = userDetailsService.loadCurrentUser()
         val answer = answerService.findById(answerId) ?: throw PostNotFoundException(answerId)
-        if(answer.answerTo!!.id != questionId)
+        if (answer.answerTo!!.id != questionId)
             throw PostNotFoundException(questionId)
 
         if (answer.author.id!! != currentUser.id!!)
@@ -104,5 +119,4 @@ class QuestionController(
         println("Sent event ${event.type}")
         messagingTemplate.convertAndSend("/topic/events", event)
     }
-
 }
